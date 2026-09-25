@@ -24,7 +24,7 @@ The skill is located at `.claude/skills/grade-excel/`. It produces two files bes
 2. Process batches **sequentially, one batch at a time**: for the current batch, spawn 5 grading subagents — one per student sheet — in parallel; each grader grades exactly ONE student sheet and appends it into `batch-<NNN>-grading.json` (first grader creates `{"batch_id": N, "sheets": [...]}`, the rest append).
 3. Run `validate-partial` for the batch; it must pass before the next batch starts.
 4. Spawn a separate reviewer subagent per batch. The reviewer independently evaluates the answers and rubrics, then writes `batch-<NNN>-review-round-1.json`.
-5. Validate all reviews. When every review passes, merge immediately. For a finding in round 1, a correction agent updates only that batch and a new independent reviewer performs round 2. Any finding in round 2 stops the workflow without final output.
+5. Validate all reviews. When every review passes, merge immediately. For a finding in round 1, a correction agent updates only that batch and a new independent reviewer performs round 2. If round 2 still has findings, apply a final correction per the reviewer's recommendations, re-validate the partial, and merge (no round 3).
 6. Run `merge` to calculate totals and write the JSON and Markdown outputs, then run `verify-final` to verify both files.
 
 The batch and review files belong in:

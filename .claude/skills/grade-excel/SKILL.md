@@ -31,7 +31,7 @@ Sau khi user gọi skill, skill tự chấm payload và xuất grading JSON kèm
 8. Dùng Python `validate-review` cho review vừa có:
    - `python "<skill-root>/scripts/json_pipeline.py" validate-review --batch <batch-payload> --review <review-json>`
    Nếu tất cả `pass`, dừng review ngay ở round 1. Nếu có `changes_required`, dispatch correction subagent cho đúng batch lỗi để cập nhật partial JSON theo findings, rồi validate lại partial.
-9. Chỉ với các batch đã sửa, spawn reviewer độc lập mới cho **round 2** và validate review. Nếu tất cả pass, tiếp tục merge. Nếu còn finding sau round 2, dừng và báo lỗi review; không tạo output cuối. Không được có round 3.
+9. Chỉ với các batch đã sửa, spawn reviewer độc lập mới cho **round 2** và validate review. Nếu pass, tiếp tục merge. Nếu round 2 vẫn còn finding: **apply thêm một vòng correction cuối** theo findings, validate lại partial, rồi merge (không review round 3). Correction cuối phải áp đúng recommended_score/feedback của reviewer; nếu bổ sung làm partial sai schema, dừng và báo lỗi.
 10. Sau khi mọi batch pass review, chạy Python `merge` để gộp theo thứ tự payload, tính `raw_score`, `total_score` thang 10, thống kê, và tạo đồng thời grading JSON/Markdown:
    - `python "<skill-root>/scripts/json_pipeline.py" merge --manifest <manifest> --output <grading-json> --report <report-md>`
    Không dùng LLM để cộng điểm, xếp hạng hay render report.
@@ -129,6 +129,6 @@ Mỗi lần chạy mới, skill dọn sạch toàn bộ nội dung `.tmp` trư�
 - Không để subagent ghi đè partial của batch khác hoặc các file output cuối.
 - Không xóa chính thư mục `.tmp` hoặc bất kỳ file/thư mục nào nằm ngoài `.tmp` của project hiện tại.
 - Không để grader tự tính tổng, render report, validate schema hoặc tự phê duyệt kết quả của chính nó.
-- Không merge nếu có partial/review lỗi, hoặc review round 2 còn finding.
+- Không merge nếu có partial/review lỗi, hoặc correction cuối (sau round 2) không validate được. Review tối đa 2 round; có finding ở round 2 thì apply correction cuối theo reviewer rồi merge, không review round 3.
 - Không chạy reviewer round 2 khi mọi batch đã pass round 1, và không chạy review quá 2 round.
 - Không phụ thuộc source code hay prompt ngoài folder skill khi chạy workflow chính.
