@@ -1,0 +1,50 @@
+{
+  "batch_id": 3,
+  "sheets": [
+    {
+      "sheet_name": "NamMP2",
+      "rows": [
+        {"row": 2, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 3, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 4, "feedback": "Câu trả lời 'SELECT' không liên quan đến yêu cầu nêu hai cách tạo thread trong Java.", "score": 0}
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì chưa có câu trả lời phù hợp cho các câu hỏi. Chưa thể hiện kiến thức tốt về Java Core trong batch này. Cần trả lời đúng trọng tâm, nêu hai cách tạo thread là kế thừa Thread hoặc triển khai Runnable, đồng thời trình bày thuật toán và các khái niệm được hỏi."
+    },
+    {
+      "sheet_name": "NgocNLT2",
+      "rows": [
+        {"row": 2, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 3, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 4, "feedback": "Không có câu trả lời.", "score": 0}
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về exception, abstraction, overloading và overriding. Hãy bổ sung câu trả lời giải thích các ý chính theo từng câu hỏi."
+    },
+    {
+      "sheet_name": "NhuanLD3",
+      "rows": [
+        {"row": 2, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 3, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 4, "feedback": "Không có câu trả lời.", "score": 0}
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về abstraction, xử lý exception, HashMap và Hashtable. Hướng cải thiện là trả lời từng câu, nêu đặc điểm cốt lõi và so sánh rõ các khái niệm được hỏi."
+    },
+    {
+      "sheet_name": "PhucNQ16",
+      "rows": [
+        {"row": 2, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 3, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 4, "feedback": "Không có câu trả lời.", "score": 0}
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về inheritance, deadlock và Comparator. Hãy bổ sung định nghĩa, cách xử lý hoặc ví dụ phù hợp cho từng câu hỏi."
+    },
+    {
+      "sheet_name": "TrungCT7",
+      "rows": [
+        {"row": 2, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 3, "feedback": "Không có câu trả lời.", "score": 0},
+        {"row": 4, "feedback": "Câu trả lời 'f' không nêu được sự khác biệt giữa Comparable và Comparator.", "score": 0}
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì chưa có câu trả lời phù hợp cho các câu hỏi. Chưa thể hiện kiến thức tốt về exception, kiểu int/Integer hoặc Comparable/Comparator. Cần trả lời đúng trọng tâm và nêu rõ đặc điểm cùng cách sử dụng của các khái niệm được hỏi."
+    }
+  ]
+}

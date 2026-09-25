@@ -1,0 +1,451 @@
+{
+  "source_payload": "D:\\Workspace_claude\\chamAudit\\results-102-grade-excel-payload.json",
+  "rubric": {
+    "must_have_max": 8,
+    "nice_to_have_max": 2,
+    "optional_bonus": 1,
+    "score_cap": 10
+  },
+  "sheets": [
+    {
+      "sheet_name": "AnhTP43",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Nội dung “abcxyz123@@@@” không trả lời câu hỏi về thời điểm sử dụng Iterator và không nêu cách duyệt collection hoặc xóa phần tử an toàn; chưa đạt yêu cầu.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa thể hiện kiến thức đánh giá được trong các câu trả lời. Mức độ hoàn chỉnh thấp vì chỉ có một nội dung không liên quan và hai câu bỏ trống. Cần ôn Iterator, cloning và phép hoán đổi không dùng biến tạm, sau đó trả lời đúng trọng tâm.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 1,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "BaoVN5",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để thể hiện kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần bổ sung nội dung về Stack/Heap, cách chuyển ArrayList thành array và các lựa chọn tạo HashMap thread-safe.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "BaoVH4",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để đánh giá kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn kiểu tham chiếu, khác biệt giữa Runnable và Thread, cùng cơ chế wait/notify và điều kiện sử dụng chúng.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "DatTC6",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để thể hiện kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn cách đồng bộ HashMap, phân biệt int với Integer và sự khác nhau về bộ nhớ giữa process và thread.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "DuongTD9",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để đánh giá kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn sự khác nhau giữa sleep và wait, checked/unchecked exception, và phân biệt Error với Exception.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "HaPN16",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Câu trả lời không liên quan đến sự khác biệt giữa int và Integer, chưa nêu được kiểu nguyên thủy và lớp wrapper.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Kiến thức trong phần trả lời còn hạn chế và hai câu chưa có câu trả lời, nên mức độ hoàn chỉnh thấp. Cần ôn lại kiểu dữ liệu nguyên thủy và wrapper trong Java, cùng các khái niệm semaphore, mutex và đồng bộ hóa luồng; hãy nêu định nghĩa cốt lõi và ví dụ ngắn cho mỗi khái niệm.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 1,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "HoangNQ26",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Câu trả lời nhầm Serialization trong Java với mức cô lập Serializable của cơ sở dữ liệu. Chưa nêu việc chuyển đối tượng thành chuỗi byte để lưu trữ hoặc truyền đi.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Có đề cập mutex dùng để khóa dữ liệu, nhưng chưa giải thích cơ chế loại trừ lẫn nhau giữa các luồng và chưa phân biệt với semaphore giới hạn N luồng truy cập.",
+          "score": 1
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Có một ý liên quan về mutex, nhưng câu trả lời về Serialization nhầm sang khái niệm khác và câu so sánh Statement chưa được trả lời; mức độ hoàn chỉnh thấp. Cần phân biệt Serialization trong Java với mức cô lập giao dịch cơ sở dữ liệu, đồng thời ôn định nghĩa semaphore, mutex và PreparedStatement.",
+      "raw_score": 1.0,
+      "total_score": 0.33,
+      "max_score": 30,
+      "percentage": 3.33,
+      "answered_count": 2,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "HuyenNTK43",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời cho cả ba câu nên chưa thể hiện được kiến thức trong các chủ đề được hỏi; mức độ hoàn chỉnh chưa đạt. Hãy bổ sung định nghĩa ngắn, các bước hoặc phương pháp chính, và một ví dụ thực tế cho từng câu.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "KhanhHQ15",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Nêu đúng hướng dùng join để chờ A hoàn thành trước khi B tiếp tục; chuỗi CompletableFuture cũng có thể biểu diễn thứ tự phụ thuộc. Cần nói rõ B phải chờ A (ví dụ B gọi A.join()) và giải thích ngắn cơ chế chờ.",
+          "score": 7
+        },
+        {
+          "row": 3,
+          "feedback": "Nhận ra Hashtable là lớp cũ và HashMap thường được ưu tiên, nhưng chưa nêu khác biệt chính: HashMap không đồng bộ và cho phép null, còn Hashtable đồng bộ và không cho phép null.",
+          "score": 2
+        },
+        {
+          "row": 4,
+          "feedback": "Phân biệt đúng: == so sánh tham chiếu, còn equals() so sánh sự tương đương theo cách triển khai của đối tượng. Có thể bổ sung ví dụ String hoặc lưu ý override hashCode() cùng equals().",
+          "score": 8
+        }
+      ],
+      "overall_comment": "Thể hiện hiểu biết khá tốt về equals() và cách sắp thứ tự luồng bằng join, nhưng phần HashMap/Hashtable còn thiếu các khác biệt cốt lõi; mức độ hoàn chỉnh ở mức khá. Nên diễn đạt chính xác luồng nào chờ luồng nào, rồi bổ sung tính thread-safe và quy tắc null của hai lớp map.",
+      "raw_score": 17.0,
+      "total_score": 5.67,
+      "max_score": 30,
+      "percentage": 56.67,
+      "answered_count": 3,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "KhoaNTM2",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Nêu được ý khái quát rằng lớp con kế thừa thuộc tính và phương thức từ lớp cha, nhưng chưa đề cập mục đích tái sử dụng mã hoặc cách khai báo quan hệ kế thừa trong Java.",
+          "score": 3
+        },
+        {
+          "row": 4,
+          "feedback": "Câu trả lời chưa giải thích được shallow copy là sao chép cấu trúc nhưng dùng chung tham chiếu bên trong, cũng chưa phân biệt với deep copy.",
+          "score": 1
+        }
+      ],
+      "overall_comment": "Có nắm được ý khái quát của kế thừa, nhưng câu trả lời về sao chép còn dang dở và câu dynamic binding bỏ trống; mức độ hoàn chỉnh thấp. Cần ôn cách dynamic binding chọn phương thức khi chạy, bổ sung mục đích/cú pháp kế thừa, và phân biệt rõ việc chia sẻ hay tạo bản sao cho các đối tượng lồng bên trong.",
+      "raw_score": 4.0,
+      "total_score": 1.33,
+      "max_score": 30,
+      "percentage": 13.33,
+      "answered_count": 2,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "NamMP2",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Câu trả lời 'SELECT' không liên quan đến yêu cầu nêu hai cách tạo thread trong Java.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì chưa có câu trả lời phù hợp cho các câu hỏi. Chưa thể hiện kiến thức tốt về Java Core trong batch này. Cần trả lời đúng trọng tâm, nêu hai cách tạo thread là kế thừa Thread hoặc triển khai Runnable, đồng thời trình bày thuật toán và các khái niệm được hỏi.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 1,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "NgocNLT2",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về exception, abstraction, overloading và overriding. Hãy bổ sung câu trả lời giải thích các ý chính theo từng câu hỏi.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "NhuanLD3",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về abstraction, xử lý exception, HashMap và Hashtable. Hướng cải thiện là trả lời từng câu, nêu đặc điểm cốt lõi và so sánh rõ các khái niệm được hỏi.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "PhucNQ16",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì cả ba câu đều chưa có câu trả lời. Chưa có nội dung để đánh giá kiến thức về inheritance, deadlock và Comparator. Hãy bổ sung định nghĩa, cách xử lý hoặc ví dụ phù hợp cho từng câu hỏi.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "TrungCT7",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Câu trả lời 'f' không nêu được sự khác biệt giữa Comparable và Comparator.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Mức độ hoàn chỉnh thấp vì chưa có câu trả lời phù hợp cho các câu hỏi. Chưa thể hiện kiến thức tốt về exception, kiểu int/Integer hoặc Comparable/Comparator. Cần trả lời đúng trọng tâm và nêu rõ đặc điểm cùng cách sử dụng của các khái niệm được hỏi.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 1,
+      "question_count": 3
+    },
+    {
+      "sheet_name": "TuyenLQ4",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Kiến thức tốt: chưa thể hiện được qua bài làm. Kiến thức cần cải thiện: thread safety và synchronization, các phương thức wait/notify, cùng ý nghĩa của final. Mức độ hoàn chỉnh: chưa có câu nào được trả lời. Hướng cải thiện: ôn lại từng khái niệm và bổ sung câu trả lời giải thích ngắn gọn cho cả ba câu.",
+      "raw_score": 0.0,
+      "total_score": 0.0,
+      "max_score": 30,
+      "percentage": 0.0,
+      "answered_count": 0,
+      "question_count": 3
+    }
+  ],
+  "class_summary": {
+    "raw_score": 22.0,
+    "total_score": 0.46,
+    "max_score": 480,
+    "percentage": 4.58,
+    "answered_count": 11,
+    "question_count": 48
+  }
+}

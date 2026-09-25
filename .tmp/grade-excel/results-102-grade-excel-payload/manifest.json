@@ -1,0 +1,72 @@
+{
+  "source_payload": "D:\\Workspace_claude\\chamAudit\\results-102-grade-excel-payload.json",
+  "run_dir": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload",
+  "selected_sheet_names": [
+    "AnhTP43",
+    "BaoVN5",
+    "BaoVH4",
+    "DatTC6",
+    "DuongTD9",
+    "HaPN16",
+    "HoangNQ26",
+    "HuyenNTK43",
+    "KhanhHQ15",
+    "KhoaNTM2",
+    "NamMP2",
+    "NgocNLT2",
+    "NhuanLD3",
+    "PhucNQ16",
+    "TrungCT7",
+    "TuyenLQ4"
+  ],
+  "batches": [
+    {
+      "batch_id": 1,
+      "sheet_names": [
+        "AnhTP43",
+        "BaoVN5",
+        "BaoVH4",
+        "DatTC6",
+        "DuongTD9"
+      ],
+      "payload_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-001-payload.json",
+      "partial_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-001-grading.json",
+      "review_file_pattern": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-001-review-round-{round}.json"
+    },
+    {
+      "batch_id": 2,
+      "sheet_names": [
+        "HaPN16",
+        "HoangNQ26",
+        "HuyenNTK43",
+        "KhanhHQ15",
+        "KhoaNTM2"
+      ],
+      "payload_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-002-payload.json",
+      "partial_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-002-grading.json",
+      "review_file_pattern": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-002-review-round-{round}.json"
+    },
+    {
+      "batch_id": 3,
+      "sheet_names": [
+        "NamMP2",
+        "NgocNLT2",
+        "NhuanLD3",
+        "PhucNQ16",
+        "TrungCT7"
+      ],
+      "payload_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-003-payload.json",
+      "partial_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-003-grading.json",
+      "review_file_pattern": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-003-review-round-{round}.json"
+    },
+    {
+      "batch_id": 4,
+      "sheet_names": [
+        "TuyenLQ4"
+      ],
+      "payload_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-004-payload.json",
+      "partial_file": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-004-grading.json",
+      "review_file_pattern": "D:\\Workspace_claude\\chamAudit\\.tmp\\grade-excel\\results-102-grade-excel-payload\\batch-004-review-round-{round}.json"
+    }
+  ]
+}

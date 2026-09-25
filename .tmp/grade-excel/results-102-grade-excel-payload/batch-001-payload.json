@@ -1,0 +1,267 @@
+{
+  "batch_id": 1,
+  "source_payload": "D:\\Workspace_claude\\chamAudit\\results-102-grade-excel-payload.json",
+  "rubric": {
+    "must_have_max": 8,
+    "nice_to_have_max": 2,
+    "optional_bonus": 1,
+    "score_cap": 10
+  },
+  "sheets": [
+    {
+      "sheet_name": "AnhTP43",
+      "question_start_row": 2,
+      "question_end_row": 4,
+      "summary_row": 5,
+      "questions": [
+        {
+          "row": 2,
+          "id": "JC-E-28",
+          "type": "Conceptual",
+          "level": "Easy",
+          "module": "java core",
+          "question": "Khi nào bạn dùng Iterator?",
+          "answer": "abcxyz123@@@@",
+          "rubric_must_have": "Khi cần duyệt collection, đặc biệt khi cần xóa phần tử trong lúc duyệt.",
+          "rubric_nice_to_have": "So sánh với vòng lặp for-each.",
+          "rubric_optional": "remove() là cách an toàn duy nhất để xóa khi đang duyệt."
+        },
+        {
+          "row": 3,
+          "id": "JC-H-49",
+          "type": "Conceptual",
+          "level": "Hard",
+          "module": "java core",
+          "question": "Cách implement Shallow cloning và Deep cloning?",
+          "answer": "",
+          "rubric_must_have": "Shallow: implements Cloneable, override clone(). Deep: các đối tượng con cũng phải implement Cloneable, hoặc dùng Serialization.",
+          "rubric_nice_to_have": "Ưu nhược điểm của từng cách (hiệu năng, độ phức tạp).",
+          "rubric_optional": "Thư viện bên ngoài (e.g., Apache Commons Lang) để deep clone."
+        },
+        {
+          "row": 4,
+          "id": "JC-M-72",
+          "type": "Coding",
+          "level": "Medium",
+          "module": "java core",
+          "question": "Đề bài: Viết phương thức hoán đổi giá trị của 2 số nguyên mà không sử dụng biến tạm.\r\nInput: a = 10, b = 20\r\nOutput: a = 20, b = 10",
+          "answer": "",
+          "rubric_must_have": "Dùng phép toán cộng/trừ, hoặc hiệu quả hơn là dùng phép toán bitwise XOR.",
+          "rubric_nice_to_have": "a = a + b; b = a - b; a = a - b; hoặc a = a ^ b; b = a ^ b; a = a ^ b;",
+          "rubric_optional": "Giải thích ưu nhược điểm của từng cách (e.g., cộng/trừ có thể gây tràn số)."
+        }
+      ],
+      "output_contract": {
+        "feedback_range": "J2:J4",
+        "score_range": "K2:K4",
+        "overall_comment_cell": "J5",
+        "total_formula_cell": "K5",
+        "total_formula": "=SUM(K2:K4)"
+      }
+    },
+    {
+      "sheet_name": "BaoVN5",
+      "question_start_row": 2,
+      "question_end_row": 4,
+      "summary_row": 5,
+      "questions": [
+        {
+          "row": 2,
+          "id": "JC-M-66",
+          "type": "Conceptual",
+          "level": "Medium",
+          "module": "java core",
+          "question": "Bộ nhớ Stack và Heap là gì?",
+          "answer": "",
+          "rubric_must_have": "Heap: lưu trữ đối tượng và mảng, được chia sẻ bởi tất cả các thread. Stack: lưu trữ biến cục bộ và lời gọi phương thức, mỗi thread có stack riêng.",
+          "rubric_nice_to_have": "StackOverflowError, OutOfMemoryError.",
+          "rubric_optional": "Các vùng nhớ khác: Method Area, PC Registers."
+        },
+        {
+          "row": 3,
+          "id": "JC-E-19",
+          "type": "Conceptual",
+          "level": "Easy",
+          "module": "java core",
+          "question": "Làm sao để lấy một array từ một ArrayList?",
+          "answer": "",
+          "rubric_must_have": "Dùng phương thức toArray().",
+          "rubric_nice_to_have": "Ngược lại: Arrays.asList().",
+          "rubric_optional": "Lưu ý của Arrays.asList() (fixed-size)."
+        },
+        {
+          "row": 4,
+          "id": "JC-H-37",
+          "type": "Conceptual",
+          "level": "Hard",
+          "module": "java core",
+          "question": "Làm sao để tạo một HashMap thread-safe?",
+          "answer": "",
+          "rubric_must_have": "Dùng ConcurrentHashMap hoặc Collections.synchronizedMap(new HashMap<>()).",
+          "rubric_nice_to_have": "So sánh ConcurrentHashMap vs Hashtable vs synchronizedMap.",
+          "rubric_optional": "ConcurrentHashMap cho phép đọc đồng thời, hiệu năng cao hơn."
+        }
+      ],
+      "output_contract": {
+        "feedback_range": "J2:J4",
+        "score_range": "K2:K4",
+        "overall_comment_cell": "J5",
+        "total_formula_cell": "K5",
+        "total_formula": "=SUM(K2:K4)"
+      }
+    },
+    {
+      "sheet_name": "BaoVH4",
+      "question_start_row": 2,
+      "question_end_row": 4,
+      "summary_row": 5,
+      "questions": [
+        {
+          "row": 2,
+          "id": "JC-E-02",
+          "type": "Conceptual",
+          "level": "Easy",
+          "module": "java core",
+          "question": "Kiểu dữ liệu tham chiếu/đối tượng là gì?",
+          "answer": "",
+          "rubric_must_have": "Tham chiếu đến địa chỉ ô nhớ của đối tượng, không lưu giá trị trực tiếp.",
+          "rubric_nice_to_have": "Ví dụ: String, Object, Array.",
+          "rubric_optional": "So sánh với con trỏ trong C/C++."
+        },
+        {
+          "row": 3,
+          "id": "JC-M-61",
+          "type": "Conceptual",
+          "level": "Medium",
+          "module": "java core",
+          "question": "Sự khác biệt khi dùng Runnable và Thread?",
+          "answer": "",
+          "rubric_must_have": "Runnable là interface, Thread là class. Dùng Runnable linh hoạt hơn vì Java không hỗ trợ đa kế thừa class.",
+          "rubric_nice_to_have": "Nhiều thread có thể chia sẻ cùng một đối tượng Runnable.",
+          "rubric_optional": "Nên ưu tiên implement Runnable."
+        },
+        {
+          "row": 4,
+          "id": "JC-H-64",
+          "type": "Conceptual",
+          "level": "Hard",
+          "module": "java core",
+          "question": "Giải thích các phương thức wait(), notify(), notifyAll()?",
+          "answer": "",
+          "rubric_must_have": "wait(): thread giải phóng lock và chờ. notify(): đánh thức 1 thread đang chờ. notifyAll(): đánh thức tất cả các thread đang chờ.",
+          "rubric_nice_to_have": "Phải được gọi trong synchronized block.",
+          "rubric_optional": "Spurious wakeup và cách xử lý (dùng vòng lặp while)."
+        }
+      ],
+      "output_contract": {
+        "feedback_range": "J2:J4",
+        "score_range": "K2:K4",
+        "overall_comment_cell": "J5",
+        "total_formula_cell": "K5",
+        "total_formula": "=SUM(K2:K4)"
+      }
+    },
+    {
+      "sheet_name": "DatTC6",
+      "question_start_row": 2,
+      "question_end_row": 4,
+      "summary_row": 5,
+      "questions": [
+        {
+          "row": 2,
+          "id": "JC-H-37",
+          "type": "Conceptual",
+          "level": "Hard",
+          "module": "java core",
+          "question": "Làm sao để tạo một HashMap thread-safe?",
+          "answer": "",
+          "rubric_must_have": "Dùng ConcurrentHashMap hoặc Collections.synchronizedMap(new HashMap<>()).",
+          "rubric_nice_to_have": "So sánh ConcurrentHashMap vs Hashtable vs synchronizedMap.",
+          "rubric_optional": "ConcurrentHashMap cho phép đọc đồng thời, hiệu năng cao hơn."
+        },
+        {
+          "row": 3,
+          "id": "JC-E-03",
+          "type": "Conceptual",
+          "level": "Easy",
+          "module": "java core",
+          "question": "Sự khác biệt giữa int và Integer?",
+          "answer": "",
+          "rubric_must_have": "int: nguyên thủy. Integer: wrapper class, đối tượng.",
+          "rubric_nice_to_have": "Integer có thể null, int thì không. Integer có các method hữu ích.",
+          "rubric_optional": "Khái niệm Autoboxing/Unboxing."
+        },
+        {
+          "row": 4,
+          "id": "JC-M-56",
+          "type": "Conceptual",
+          "level": "Medium",
+          "module": "java core",
+          "question": "Sự khác biệt giữa thread và process?",
+          "answer": "",
+          "rubric_must_have": "Process: có không gian bộ nhớ riêng. Thread: chia sẻ không gian bộ nhớ của process, là một \"lightweight process\".",
+          "rubric_nice_to_have": "Giao tiếp giữa process (IPC) phức tạp hơn giao tiếp giữa thread.",
+          "rubric_optional": "Context switching giữa thread nhanh hơn process."
+        }
+      ],
+      "output_contract": {
+        "feedback_range": "J2:J4",
+        "score_range": "K2:K4",
+        "overall_comment_cell": "J5",
+        "total_formula_cell": "K5",
+        "total_formula": "=SUM(K2:K4)"
+      }
+    },
+    {
+      "sheet_name": "DuongTD9",
+      "question_start_row": 2,
+      "question_end_row": 4,
+      "summary_row": 5,
+      "questions": [
+        {
+          "row": 2,
+          "id": "JC-M-70",
+          "type": "Conceptual",
+          "level": "Medium",
+          "module": "java core",
+          "question": "Sự khác biệt giữa sleep() và wait()?",
+          "answer": "",
+          "rubric_must_have": "sleep(): của Thread, giữ lock. wait(): của Object, giải phóng lock, dùng cho giao tiếp giữa các thread.",
+          "rubric_nice_to_have": "wait() phải được gọi trong synchronized block.",
+          "rubric_optional": "wait() được đánh thức bởi notify()/notifyAll()."
+        },
+        {
+          "row": 3,
+          "id": "JC-H-52",
+          "type": "Conceptual",
+          "level": "Hard",
+          "module": "java core",
+          "question": "Giải thích các loại exception khác nhau?",
+          "answer": "",
+          "rubric_must_have": "Checked Exception: phải được xử lý tại compile time (bắt hoặc ném đi). Unchecked Exception (Runtime Exception): không bắt buộc xử lý.",
+          "rubric_nice_to_have": "Checked: lỗi ngoài tầm kiểm soát (I/O). Unchecked: lỗi logic lập trình (bug).",
+          "rubric_optional": "Tại sao Java lại có Checked Exception và tranh cãi xung quanh nó."
+        },
+        {
+          "row": 4,
+          "id": "JC-E-24",
+          "type": "Conceptual",
+          "level": "Easy",
+          "module": "java core",
+          "question": "Sự khác biệt giữa Error và Exception?",
+          "answer": "",
+          "rubric_must_have": "Error: lỗi nghiêm trọng, không thể phục hồi (e.g., OutOfMemoryError). Exception: có thể xử lý được (e.g., NullPointerException).",
+          "rubric_nice_to_have": "Cả hai đều kế thừa từ Throwable.",
+          "rubric_optional": "Ví dụ cho từng loại."
+        }
+      ],
+      "output_contract": {
+        "feedback_range": "J2:J4",
+        "score_range": "K2:K4",
+        "overall_comment_cell": "J5",
+        "total_formula_cell": "K5",
+        "total_formula": "=SUM(K2:K4)"
+      }
+    }
+  ]
+}

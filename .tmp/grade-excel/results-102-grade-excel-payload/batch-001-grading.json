@@ -1,0 +1,110 @@
+{
+  "batch_id": 1,
+  "sheets": [
+    {
+      "sheet_name": "AnhTP43",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Nội dung “abcxyz123@@@@” không trả lời câu hỏi về thời điểm sử dụng Iterator và không nêu cách duyệt collection hoặc xóa phần tử an toàn; chưa đạt yêu cầu.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa thể hiện kiến thức đánh giá được trong các câu trả lời. Mức độ hoàn chỉnh thấp vì chỉ có một nội dung không liên quan và hai câu bỏ trống. Cần ôn Iterator, cloning và phép hoán đổi không dùng biến tạm, sau đó trả lời đúng trọng tâm."
+    },
+    {
+      "sheet_name": "BaoVN5",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để thể hiện kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần bổ sung nội dung về Stack/Heap, cách chuyển ArrayList thành array và các lựa chọn tạo HashMap thread-safe."
+    },
+    {
+      "sheet_name": "BaoVH4",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để đánh giá kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn kiểu tham chiếu, khác biệt giữa Runnable và Thread, cùng cơ chế wait/notify và điều kiện sử dụng chúng."
+    },
+    {
+      "sheet_name": "DatTC6",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để thể hiện kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn cách đồng bộ HashMap, phân biệt int với Integer và sự khác nhau về bộ nhớ giữa process và thread."
+    },
+    {
+      "sheet_name": "DuongTD9",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Chưa có câu trả lời để đánh giá kiến thức. Mức độ hoàn chỉnh là 0/3 câu. Cần ôn sự khác nhau giữa sleep và wait, checked/unchecked exception, và phân biệt Error với Exception."
+    }
+  ]
+}

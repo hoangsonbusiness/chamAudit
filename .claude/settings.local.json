@@ -1,7 +1,35 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(Select-Object -First 30)",
+      "Skill(update-config)",
+      "Bash(npm run build:client)",
+      "Bash(npm run build:server)",
+      "Bash(Get-ChildItem \"D:\\\\Workspace_claude\\\\chamAudit\\\\.claude\\\\skills\\\\grade-excel\\\\temp\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Name)",
+      "Bash(powershell *)",
+      "Bash(copy *)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/preflight.py\" ensure)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/grade_excel.py\" export --input results-25.xlsx)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" export --input results-25.xlsx)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" split --input results-25.xlsx --agents 4)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" merge --input results-25.xlsx)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/grade_excel.py\" export --input results-33.xlsx 2>&1)",
+      "PowerShell(python -c \"import json; d=json.load\\(open\\('.claude/skills/grade-excel/temp/results-33_payload.json','r',encoding='utf-8'\\)\\); print\\('Sheet count:', len\\(d['sheets']\\)\\); [print\\(' -', s['sheet_name']\\) for s in d['sheets']]\")",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/grade_excel.py\" export --input results-33.xlsx 2>&1 | python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('Sheet count:', len\\(d['sheets']\\)\\); [print\\(' -', s['sheet_name']\\) for s in d['sheets']]\")",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" export --input results-33.xlsx 2>&1)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" split --input results-33.xlsx --agents 4 2>&1)",
+      "PowerShell(Get-Content \"D:\\\\Workspace_claude\\\\chamAudit\\\\.claude\\\\skills\\\\grade-excel\\\\temp\\\\partial_grading_4.json\" | ConvertFrom-Json | Select-Object -ExpandProperty sheets | Select-Object sheet_name, @{N='rows_count';E={$_.rows.Count}}, overall_comment)",
+      "Bash(Get-ChildItem *)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" merge --input results-33.xlsx 2>&1)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" apply --input results-33.xlsx --grading \".claude/skills/grade-excel/temp/grading.results-33.xlsx.json\" 2>&1)",
+      "PowerShell(python \".claude/skills/grade-excel/scripts/parallel_grade.py\" verify --input results-33.xlsx 2>&1)",
+      "Bash(New-Item *)",
+      "PowerShell(Get-Content \"D:\\\\Workspace_claude\\\\chamAudit\\\\.claude\\\\skills\\\\grade-excel\\\\temp\\\\partial_grading_3.json\" | ConvertFrom-Json | Select-Object -ExpandProperty sheets | Select-Object sheet_name, @{N='rows';E={$_.rows.Count}}, @{N='total_score';E={\\($_.rows | Measure-Object -Property score -Sum\\).Sum}})",
+      "PowerShell(python -c \"import json; data=json.load\\(open\\('.claude/skills/grade-excel/temp/grading.results-33.xlsx.json','r',encoding='utf-8'\\)\\); [print\\(s['sheet_name'], round\\(sum\\(r['score'] for r in s['rows']\\)/8, 2\\), sep=' | '\\) for s in data['sheets']]\")",
+      "PowerShell(Invoke-Expression \"python '.claude/skills/grade-excel/scripts/preflight.py' ensure\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -c ' *)"
     ]
   }
 }
