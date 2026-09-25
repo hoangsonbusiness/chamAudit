@@ -23,12 +23,12 @@ Sau khi user gọi skill, skill tự chấm payload và xuất grading JSON kèm
 3. Nếu có `--sheet`, chỉ lấy sheet đó từ payload; nếu không tìm thấy, dừng với lỗi rõ ràng. Nếu không có `--sheet`, dùng toàn bộ `sheets` của payload.
 4. Chạy Python pipeline để thực hiện phần xác định được: validate payload, dọn `./.tmp`, chọn sheet, chia batch 5 học viên và tạo manifest/partial path. Không dùng LLM cho các bước này:
    - `python "<skill-root>/scripts/json_pipeline.py" prepare --input <payload> --project-dir <current-project> [--sheet <name>]`
-5. Đọc `assets/grade_excel_prompt.md`. Spawn một grader subagent cho mỗi batch trong manifest và dispatch tất cả batch song song. Grader chỉ nhận batch payload, chấm nội dung câu trả lời theo rubric và ghi `batch-<NNN>-grading.json`. Đây là bước duy nhất dùng LLM để tạo score/feedback.
-6. Chạy `validate-partial` cho mọi partial JSON:
+5. Đọc `assets/grade_excel_prompt.md`. Chạy batch **tuần tự**: xử lý xong batch 1 (đã pass `validate-partial`) mới sang batch 2. Trong MỘT batch, spawn **5 grader subagent song song — mỗi grader chấm đúng 1 học viên (một sheet, 12 câu)** trong batch. Grader đọc batch payload lấy đúng sheet của mình, chấm theo rubric và ghi sheet của mình vào `batch-<NNN>-grading.json`: grader với sheet đầu tiên tạo file `{"batch_id": N, "sheets": [<sheet của mình>]}`, các grader khác đọc file hiện tại, append sheet của mình, ghi lại. Đây là bước duy nhất dùng LLM để tạo score/feedback. Không gom cả batch chấm một lần; mỗi grader chỉ giữ một sheet.
+6. Sau khi 5 grader của batch hoàn tất, chạy `validate-partial` cho batch đó:
    - `python "<skill-root>/scripts/json_pipeline.py" validate-partial --batch <batch-payload> --partial <partial-json>`
-   Thiếu batch, sheet/row sai, feedback rỗng hoặc score ngoài 0–10 là lỗi cấu trúc; sửa/cho grader chạy lại trước review.
-7. Spawn một **reviewer subagent độc lập** cho mỗi batch, song song với nhau. Reviewer không phải grader của batch đó; đọc `assets/grade_excel_review_prompt.md`, nhận batch payload và partial JSON, tự đối chiếu answer/rubric rồi ghi `batch-<NNN>-review-round-1.json` với verdict `pass` hoặc `changes_required`.
-8. Dùng Python `validate-review` cho mọi review:
+   File partial cuối phải chứa ĐỦ các sheet của batch theo đúng thứ tự. Thiếu batch, sheet/row sai, feedback rỗng hoặc score ngoài 0–10 là lỗi cấu trúc; spawn lại grader cho đúng sheet lỗi trước review. Batch pass mới sang batch tiếp theo.
+7. Validate batch xong review batch: spawn một **reviewer subagent độc lập** cho batch vừa pass. Reviewer không phải grader của batch đó; đọc `assets/grade_excel_review_prompt.md`, nhận batch payload và partial JSON, tự đối chiếu answer/rubric rồi ghi `batch-<NNN>-review-round-1.json` với verdict `pass` hoặc `changes_required`.
+8. Dùng Python `validate-review` cho review vừa có:
    - `python "<skill-root>/scripts/json_pipeline.py" validate-review --batch <batch-payload> --review <review-json>`
    Nếu tất cả `pass`, dừng review ngay ở round 1. Nếu có `changes_required`, dispatch correction subagent cho đúng batch lỗi để cập nhật partial JSON theo findings, rồi validate lại partial.
 9. Chỉ với các batch đã sửa, spawn reviewer độc lập mới cho **round 2** và validate review. Nếu tất cả pass, tiếp tục merge. Nếu còn finding sau round 2, dừng và báo lỗi review; không tạo output cuối. Không được có round 3.
@@ -125,7 +125,7 @@ Mỗi lần chạy mới, skill dọn sạch toàn bộ nội dung `.tmp` trư�
 - Không gọi `grade_excel.py`, `parallel_grade.py` hoặc preflight trong workflow này.
 - Không trả output text tự do: phải tạo grading JSON đúng schema và ghi ra file.
 - Không dùng `workbook_path`, `summary_row` hoặc `output_contract` để quyết định kết quả.
-- Không chấm tuần tự khi có từ hai batch trở lên; phải dispatch các subagent batch song song.
+- Batch xử lý tuần tự (batch sau chỉ chạy khi batch trước pass validate+review); trong batch, phải spawn 5 grader subagent song song (mỗi grader 1 học viên), không cho 1 grader chấm cả batch.
 - Không để subagent ghi đè partial của batch khác hoặc các file output cuối.
 - Không xóa chính thư mục `.tmp` hoặc bất kỳ file/thư mục nào nằm ngoài `.tmp` của project hiện tại.
 - Không để grader tự tính tổng, render report, validate schema hoặc tự phê duyệt kết quả của chính nó.
