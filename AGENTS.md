@@ -33,7 +33,7 @@ The batch and review files belong in:
 ./.tmp/grade-excel/<payload-stem>/
 ```
 
-Each run clears every file and child directory inside the project `.tmp` folder before creating a new manifest. Preserve `.tmp` itself and never delete outside the current project.
+All temporary files (manifests, batch payloads, partial JSON, review JSON, prompt drafts) live inside `.tmp/` — never at the repo root. Each run clears every file and child directory inside `.tmp` (rmtree-style) before creating a new manifest; nothing survives a run. Preserve `.tmp` itself and never delete outside the current project.
 
 ## Deterministic pipeline
 

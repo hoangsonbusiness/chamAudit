@@ -116,9 +116,9 @@ Tạo từ grading JSON cuối cùng, không từ Excel:
 
 ## Thư mục tạm (`.tmp`)
 
-Partial JSON luôn nằm trong `.tmp` của project hiện tại, không nằm trong folder skill: `./.tmp/grade-excel/<payload-stem>/`. Có thể xóa thư mục batch sau khi đã kiểm tra output cuối.
+TẤT CẢ file tạm (manifest, batch payload, partial JSON, review JSON, prompt nháp) đều nằm trong `.tmp` của project hiện tại — KHÔNG đặt ở thư mục gốc repo. Partial JSON: `./.tmp/grade-excel/<payload-stem>/`.
 
-Mỗi lần chạy mới, skill dọn sạch toàn bộ nội dung `.tmp` trước khi tạo batch mới; partial JSON của lần chạy trước không được tái sử dụng.
+Mỗi lần chạy mới, skill dọn sạch toàn bộ nội dung `.tmp` (rmtree-style, chuẩn `safe_clean_tmp` trong `json_pipeline.py`) trước khi tạo batch mới; partial JSON của lần chạy trước không được tái sử dụng — không file tạm nào sống sót giữa các lần chạy.
 
 ## Không làm
 - Không đọc, tạo, ghi hoặc verify workbook Excel.

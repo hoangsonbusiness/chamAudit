@@ -1,0 +1,8 @@
+# Temp workspace: all intermediate files (manifest, batch payloads, partial/review JSON).
+.tmp/
+
+# Local settings contain credentials.
+.claude/settings.local.json
+
+__pycache__/
+*.pyc
