@@ -47,10 +47,10 @@ Each run clears every file and child directory inside the project `.tmp` folder 
 | `merge` | Merge passed partials, calculate totals, and render JSON/Markdown |
 | `verify-final` | Recompute scores and check that Markdown matches final JSON |
 
-Use the installed Python 3.11 when needed:
+Use the installed Python 3.11 (`python3`):
 
 ```text
-C:\Users\hoang\AppData\Local\Programs\Python\Python311\python.exe
+python3
 ```
 
 ## LLM work and contracts
