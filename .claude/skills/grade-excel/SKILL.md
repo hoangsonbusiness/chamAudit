@@ -23,8 +23,8 @@ Sau khi user gọi skill, skill tự chấm payload và xuất grading JSON kèm
 3. Nếu có `--sheet`, chỉ lấy sheet đó từ payload; nếu không tìm thấy, dừng với lỗi rõ ràng. Nếu không có `--sheet`, dùng toàn bộ `sheets` của payload.
 4. Chạy Python pipeline để thực hiện phần xác định được: validate payload, dọn `./.tmp`, chọn sheet, chia batch 5 học viên và tạo manifest/partial path. Không dùng LLM cho các bước này:
    - `python "<skill-root>/scripts/json_pipeline.py" prepare --input <payload> --project-dir <current-project> [--sheet <name>]`
-5. Đọc `assets/grade_excel_prompt.md`. Chạy batch **tuần tự**: xử lý xong batch 1 (đã pass `validate-partial`) mới sang batch 2. Trong MỘT batch, spawn **5 grader subagent song song — mỗi grader chấm đúng 1 học viên (một sheet, 12 câu)** trong batch. Grader đọc batch payload lấy đúng sheet của mình, chấm theo rubric và ghi sheet của mình vào `batch-<NNN>-grading.json`: grader với sheet đầu tiên tạo file `{"batch_id": N, "sheets": [<sheet của mình>]}`, các grader khác đọc file hiện tại, append sheet của mình, ghi lại. Đây là bước duy nhất dùng LLM để tạo score/feedback. Không gom cả batch chấm một lần; mỗi grader chỉ giữ một sheet.
-6. Sau khi 5 grader của batch hoàn tất, chạy `validate-partial` cho batch đó:
+5. Nghi thức batch TUẦN TỰ, batch trước pass mới tới batch sau. Trong MỘT batch, spawn **5 grader subagent song song — mỗi grader chấm đúng 1 học viên (một sheet, 12 câu)**. Mỗi grader ghi kết quả vào **file riêng của mình** `partial-<NNN>-<sheet>-grading.json` (đường dẫn nằm trong `mirror_files` của manifest, `prepare` khởi tạo sẵn); KHÔNG ghi vào file chung `batch-<NNN>-grading.json` — ghi đè/append file chung từ nhiều subagent gây race condition mất sheet. Đây là bước duy nhất dùng LLM để tạo score/feedback.
+6. Sau khi 5 grader xong: agent chính ghép 5 file riêng theo đúng thứ tự batch into `batch-<NNN>-grading.json`, rồi chạy `validate-partial` — lệnh tự đối chiếu từng file riêng với file chung; thiếu sheet, sai sheet, sai row, feedback rỗng, score ngoài 0–10, hoặc file chung lệch file riêng đều fail. Pass mới sang batch kế.
    - `python "<skill-root>/scripts/json_pipeline.py" validate-partial --batch <batch-payload> --partial <partial-json>`
    File partial cuối phải chứa ĐỦ các sheet của batch theo đúng thứ tự. Thiếu batch, sheet/row sai, feedback rỗng hoặc score ngoài 0–10 là lỗi cấu trúc; spawn lại grader cho đúng sheet lỗi trước review. Batch pass mới sang batch tiếp theo.
 7. Validate batch xong review batch: spawn một **reviewer subagent độc lập** cho batch vừa pass. Reviewer không phải grader của batch đó; đọc `assets/grade_excel_review_prompt.md`, nhận batch payload và partial JSON, tự đối chiếu answer/rubric rồi ghi `batch-<NNN>-review-round-1.json` với verdict `pass` hoặc `changes_required`.
@@ -70,13 +70,15 @@ File `<payload-stem>-report.md` phải có tiêu đề, nguồn payload, tổng 
 
 ## Partial JSON của subagent
 
-Mỗi file `batch-<NNN>-grading.json` chỉ chứa kết quả chấm trung gian:
+Mỗi grader có **file riêng** `partial-<NNN>-<sheet>-grading.json` (đường dẫn trong `mirror_files` của manifest, `prepare` khởi tạo sẵn) — chỉ chứa ĐÚNG MỘT sheet của mình:
 
 ```json
 {"batch_id": 1, "sheets": [{"sheet_name": "AnhTP43", "rows": [{"row": 2, "feedback": "...", "score": 0}], "overall_comment": "..."}]}
 ```
 
-Agent chính là nơi duy nhất gộp partial JSON, tính tổng và tạo hai file output cuối.
+Agent chính là nơi duy nhất ghi file chung `batch-<NNN>-grading.json` (ghép từ các file riêng theo thứ tự batch), gộp partial JSON, tính tổng và tạo hai file output cuối.
+
+Khắc phục race condition: nhiều subagent cùng append/đọc-ghi một file chung làm mất sheet và tốn token chấm lại; `validate-partial` tự đối chiếu file chung với từng file riêng, lệch là fail.
 
 ## Review JSON độc lập
 
@@ -126,7 +128,7 @@ Mỗi lần chạy mới, skill dọn sạch toàn bộ nội dung `.tmp` (rmtre
 - Không trả output text tự do: phải tạo grading JSON đúng schema và ghi ra file.
 - Không dùng `workbook_path`, `summary_row` hoặc `output_contract` để quyết định kết quả.
 - Batch xử lý tuần tự (batch sau chỉ chạy khi batch trước pass validate+review); trong batch, phải spawn 5 grader subagent song song (mỗi grader 1 học viên), không cho 1 grader chấm cả batch.
-- Không để subagent ghi đè partial của batch khác hoặc các file output cuối.
+- Không để subagent ghi đè partial của batch khác, file grader riêng của subagent khác, hoặc các file output cuối. Grader chỉ ghi ĐÚNG file `partial-<NNN>-<sheet>-grading.json` được giao — cấm ghi file chung `batch-<NNN>-grading.json` (race condition).
 - Không xóa chính thư mục `.tmp` hoặc bất kỳ file/thư mục nào nằm ngoài `.tmp` của project hiện tại.
 - Không để grader tự tính tổng, render report, validate schema hoặc tự phê duyệt kết quả của chính nó.
 - Không merge nếu có partial/review lỗi, hoặc correction cuối (sau round 2) không validate được. Review tối đa 2 round; có finding ở round 2 thì apply correction cuối theo reviewer rồi merge, không review round 3.

@@ -101,11 +101,26 @@ def command_prepare(args: argparse.Namespace) -> None:
             "rubric": payload["rubric"],
             "sheets": batch_sheets,
         })
+        mirror_files: list[dict[str, str]] = []
+        for sheet in batch_sheets:
+            # One output file per grader: shared-file append caused lost updates
+            # when graders ran in parallel (race condition). Graders write only
+            # their own mirror file; the shared file is validated against them.
+            mirror_file = run_dir / f"partial-{index:03d}-{sheet['sheet_name']}-grading.json"
+            save_json(mirror_file, {"batch_id": index, "sheets": []})
+            mirror_files.append({"sheet_name": sheet["sheet_name"], "file": str(mirror_file)})
+        # Persist into the batch payload itself so any stage can self-serve these.
+        payload_data = load_json(payload_file)
+        payload_data["sheet_names"] = [sheet["sheet_name"] for sheet in batch_sheets]
+        payload_data["mirror_files"] = mirror_files
+        payload_data["partial_file"] = str(partial_file)
+        save_json(payload_file, payload_data)
         batches.append({
             "batch_id": index,
             "sheet_names": [sheet["sheet_name"] for sheet in batch_sheets],
             "payload_file": str(payload_file),
             "partial_file": str(partial_file),
+            "mirror_files": mirror_files,
             "review_file_pattern": str(review_file),
         })
     manifest = {
@@ -124,34 +139,114 @@ def expected_sheets(batch: dict[str, Any]) -> dict[str, list[int]]:
     return {sheet["sheet_name"]: [int(question["row"]) for question in sheet["questions"]] for sheet in batch["sheets"]}
 
 
+def validate_mirror_files(batch: dict[str, Any], no_shared: bool = False) -> list[dict[str, Any]]:
+    """Validate per-grader mirror files against the shared partial file.
+
+    Each grader must write exactly one sheet into its OWN mirror file. The
+    shared partial file must contain the union of all mirror sheets in
+    batch order. Detects racing caused lost updates when graders write into a
+    single shared file. Returns the validated sheet list in batch order.
+    """
+    signature = lambda sheet: (
+        sheet.get("sheet_name"),
+        [int(row.get("row", -1)) for row in sheet.get("rows", [])],
+        tuple((row.get("feedback"), row.get("score")) for row in sheet.get("rows", [])),
+        sheet.get("overall_comment"),
+    )
+    union: dict[str, dict[str, Any]] = {}
+    expected = expected_sheets(batch)
+    for mirror in batch.get("mirror_files", []):
+        file = Path(mirror["file"])
+        if not file.is_file():
+            raise ValueError(f"mirror file missing (grader may have died): {file}")
+        data = load_json(file)
+        require_keys(data, ("batch_id", "sheets"), "mirror file")
+        if int(data["batch_id"]) != int(batch["batch_id"]):
+            raise ValueError("mirror file batch_id does not match batch payload")
+        sheets = data["sheets"]
+        if not isinstance(sheets, list) or len(sheets) != 1:
+            raise ValueError(f"mirror file must contain exactly one sheet: {file.name}")
+        sheet = sheets[0]
+        if not isinstance(sheet, dict) or sheet.get("sheet_name") != mirror["sheet_name"]:
+            raise ValueError(f"mirror file sheet_name does not match assignment: {file.name}")
+        validate_single_sheet(expected, sheet)
+        if not no_shared and mirror["sheet_name"] in union:
+            raise ValueError(f"duplicate sheet in mirrors: {mirror['sheet_name']}")
+        union[mirror["sheet_name"]] = sheet
+    missing = [name for name in batch["sheet_names"] if name not in union]
+    if missing:
+        raise ValueError(f"mirror files missing sheets: {', '.join(missing)}")
+    if not no_shared and batch.get("partial_file"):
+        partial_file = Path(batch["partial_file"])
+        if partial_file.is_file():
+            partial = load_json(partial_file)
+            if int(partial.get("batch_id", -1)) != int(batch["batch_id"]) or [s.get("sheet_name") for s in partial.get("sheets", [])] != batch["sheet_names"]:
+                raise ValueError("shared partial file does not match batch order — race condition detected")
+            expected = {s.get("sheet_name"): s for s in partial.get("sheets", [])}
+            for name in batch["sheet_names"]:
+                if signature(expected.get(name)) != signature(union[name]):
+                    raise ValueError(f"shared partial sheet differs from mirror file: {name} — race condition detected")
+    return [union[name] for name in batch["sheet_names"]]
+
+
+def validate_single_sheet(expected: dict[str, list[int]], sheet: dict[str, Any]) -> None:
+    """Validate one graded sheet against its expected row list."""
+    require_keys(sheet, ("sheet_name", "rows", "overall_comment"), "graded sheet")
+    name = sheet["sheet_name"]
+    if name not in expected:
+        raise ValueError(f"sheet not assigned in this batch: {name}")
+    if not str(sheet["overall_comment"]).strip():
+        raise ValueError(f"{name}: overall_comment is empty")
+    rows = sheet["rows"]
+    if not isinstance(rows, list) or [int(row.get("row", -1)) for row in rows] != expected[name]:
+        raise ValueError(f"{name}: graded rows do not match assigned rows")
+    for row in rows:
+        require_keys(row, ("row", "feedback", "score"), "graded row")
+        if not str(row["feedback"]).strip():
+            raise ValueError(f"{name} row {row['row']}: feedback is empty")
+        score = float(row["score"])
+        if not 0 <= score <= 10:
+            raise ValueError(f"{name} row {row['row']}: score outside 0..10")
+
+
 def validate_partial(batch: dict[str, Any], partial: dict[str, Any]) -> None:
     require_keys(partial, ("batch_id", "sheets"), "partial")
     if int(partial["batch_id"]) != int(batch["batch_id"]):
         raise ValueError("partial batch_id does not match batch payload")
     expected = expected_sheets(batch)
     actual = partial["sheets"]
-    if not isinstance(actual, list) or [sheet.get("sheet_name") for sheet in actual] != list(expected):
+    if not isinstance(actual, list) or [sheet.get("sheet_name") for sheet in actual if isinstance(sheet, dict)] != list(expected):
         raise ValueError("partial sheets must exactly match assigned batch order")
     for sheet in actual:
-        require_keys(sheet, ("sheet_name", "rows", "overall_comment"), "graded sheet")
-        if not str(sheet["overall_comment"]).strip():
-            raise ValueError(f"{sheet['sheet_name']}: overall_comment is empty")
-        rows = sheet["rows"]
-        if not isinstance(rows, list) or [int(row.get("row", -1)) for row in rows] != expected[sheet["sheet_name"]]:
-            raise ValueError(f"{sheet['sheet_name']}: graded rows do not match assigned rows")
-        for row in rows:
-            require_keys(row, ("row", "feedback", "score"), "graded row")
-            if not str(row["feedback"]).strip():
-                raise ValueError(f"{sheet['sheet_name']} row {row['row']}: feedback is empty")
-            score = float(row["score"])
-            if not 0 <= score <= 10:
-                raise ValueError(f"{sheet['sheet_name']} row {row['row']}: score outside 0..10")
+        validate_single_sheet(expected, sheet)
 
 
 def command_validate_partial(args: argparse.Namespace) -> None:
-    batch, partial = load_json(Path(args.batch)), load_json(Path(args.partial))
-    validate_partial(batch, partial)
-    print(json.dumps({"valid": True, "batch_id": batch["batch_id"]}, ensure_ascii=False))
+    batch, partial_file_arg = load_json(Path(args.batch)), Path(args.partial)
+    # Step 1: mirrors are the source of truth during parallel grading. Each
+    # must hold exactly one valid sheet. The shared partial is checked AFTER.
+    sheets = validate_mirror_files(batch, no_shared=True)
+    partial_path = batch.get("partial_file")
+    if not partial_path:
+        raise ValueError("batch payload has no partial_file reference")
+    if not partial_file_arg.is_file():
+        # Shared partial missing: build it from validated mirrors.
+        save_json(partial_file_arg, {"batch_id": batch["batch_id"], "sheets": sheets})
+    else:
+        p = load_json(partial_file_arg)
+        if int(p.get("batch_id", -1)) != int(batch["batch_id"]) or [s.get("sheet_name") for s in p.get("sheets", [])] != batch["sheet_names"]:
+            # Wrong shape/order — symptoms of a racing lost-update: heal it
+            # from the mirrors (the source of truth).
+            save_json(partial_file_arg, {"batch_id": batch["batch_id"], "sheets": sheets})
+        else:
+            # If a mirror sheet's feedback/scores were corrected, sync the shared file.
+            sig = lambda s: tuple((r.get("row"), r.get("feedback"), r.get("score")) for r in s.get("rows", []))
+            p_by = {s.get("sheet_name"): s for s in p.get("sheets", [])}
+            for sh in sheets:
+                if sig(p_by.get(sh["sheet_name"], {})) != sig(sh):
+                    save_json(partial_file_arg, {"batch_id": batch["batch_id"], "sheets": sheets})
+                    break
+    print(json.dumps({"valid": True, "batch_id": batch["batch_id"], "sheet_count": len(batch.get("sheet_names", []))}, ensure_ascii=False))
 
 
 def validate_review(batch: dict[str, Any], review: dict[str, Any]) -> None:
@@ -214,8 +309,24 @@ def command_merge(args: argparse.Namespace) -> None:
     partial_by_name: dict[str, dict[str, Any]] = {}
     for item in manifest["batches"]:
         batch = load_json(Path(item["payload_file"]))
-        partial = load_json(Path(item["partial_file"]))
-        validate_partial(batch, partial)
+        try:
+            partial = load_json(Path(item["partial_file"]))
+            validate_partial(batch, partial)
+        except (OSError, ValueError, json.JSONDecodeError):
+            # Shared partial missing or corrupt (lost updates are common when
+            # graders append concurrently). Reconstruct from mirror files that
+            # should each hold exactly one sheet.
+            sheets = validate_mirror_files(batch, no_shared=True)
+            partial = {"batch_id": batch["batch_id"], "sheets": sheets}
+            save_json(Path(item["partial_file"]), partial)
+        else:
+            # Detect a racing lost-update: shared partial must match mirrors.
+            try:
+                validate_mirror_files(batch, no_shared=False)
+            except ValueError:
+                sheets = validate_mirror_files(batch, no_shared=True)
+                partial = {"batch_id": batch["batch_id"], "sheets": sheets}
+                save_json(Path(item["partial_file"]), partial)
         for sheet in partial["sheets"]:
             partial_by_name[sheet["sheet_name"]] = sheet
     sheets = [summarize_sheet(source_by_name[name], partial_by_name[name]) for name in manifest["selected_sheet_names"]]
