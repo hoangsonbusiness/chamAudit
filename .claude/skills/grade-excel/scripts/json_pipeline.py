@@ -169,7 +169,7 @@ def validate_mirror_files(batch: dict[str, Any], no_shared: bool = False) -> lis
         sheet = sheets[0]
         if not isinstance(sheet, dict) or sheet.get("sheet_name") != mirror["sheet_name"]:
             raise ValueError(f"mirror file sheet_name does not match assignment: {file.name}")
-        validate_single_sheet(expected, sheet)
+        validate_single_sheet(expected, sheet, payload_batch=batch, strict=True)
         if not no_shared and mirror["sheet_name"] in union:
             raise ValueError(f"duplicate sheet in mirrors: {mirror['sheet_name']}")
         union[mirror["sheet_name"]] = sheet
@@ -189,24 +189,76 @@ def validate_mirror_files(batch: dict[str, Any], no_shared: bool = False) -> lis
     return [union[name] for name in batch["sheet_names"]]
 
 
-def validate_single_sheet(expected: dict[str, list[int]], sheet: dict[str, Any]) -> None:
-    """Validate one graded sheet against its expected row list."""
+_STUB_MARKERS = ("stub", "(stub for validate)", "placeholder", "todo", "điền sau")
+
+
+def validate_single_sheet(expected: dict[str, list[int]], sheet: dict[str, Any], payload_batch: dict[str, Any] | None = None, strict: bool = False) -> None:
+    """Validate one graded sheet against its expected row list.
+
+    Gate flags (strict=True turns them all on):
+    1. Stub detection: feedback / overall_comment containing template markers is rejected.
+    2. Blank-consistency: a graded score of 0 is only allowed with the exact
+       empty-answer feedback AND a blank answer in the source payload.
+    """
     require_keys(sheet, ("sheet_name", "rows", "overall_comment"), "graded sheet")
     name = sheet["sheet_name"]
     if name not in expected:
         raise ValueError(f"sheet not assigned in this batch: {name}")
-    if not str(sheet["overall_comment"]).strip():
+    comment = str(sheet["overall_comment"])
+    if not comment.strip():
         raise ValueError(f"{name}: overall_comment is empty")
+    if strict and any(marker in comment.lower() for marker in _STUB_MARKERS):
+        raise ValueError(f"{name}: overall_comment looks like a stub/probe, not a real comment — FABRICATION GATE")
     rows = sheet["rows"]
     if not isinstance(rows, list) or [int(row.get("row", -1)) for row in rows] != expected[name]:
         raise ValueError(f"{name}: graded rows do not match assigned rows")
+    blank_ok = "Không có câu trả lời."
+    source_questions: dict[int, dict[str, Any]] = {}
+    if payload_batch:
+        for src_sheet in payload_batch.get("sheets", []):
+            if src_sheet["sheet_name"] == name:
+                for q in src_sheet.get("questions", []):
+                    source_questions[int(q["row"])] = q
     for row in rows:
         require_keys(row, ("row", "feedback", "score"), "graded row")
-        if not str(row["feedback"]).strip():
+        feedback = str(row["feedback"])
+        if not feedback.strip():
             raise ValueError(f"{name} row {row['row']}: feedback is empty")
+        if strict and any(marker in feedback.lower() for marker in _STUB_MARKERS):
+            raise ValueError(f"{name} row {row['row']}: feedback looks like a stub/probe — FABRICATION GATE")
         score = float(row["score"])
         if not 0 <= score <= 10:
             raise ValueError(f"{name} row {row['row']}: score outside 0..10")
+        if strict and score == 0:
+            src_q = source_questions.get(int(row["row"]))
+            if (src_q is None or not str(src_q.get("answer", "")).strip()) and feedback.strip() != blank_ok:
+                raise ValueError(f"{name} row {row['row']}: payload answer is EMPTY so score 0 requires exactly '{blank_ok}' (got '{feedback[:60]}…') — BLANK-INTEGRITY GATE")
+            if src_q is not None and len(str(src_q.get("answer", "")).strip()) >= 30 and feedback.strip() == blank_ok:
+                raise ValueError(f"{name} row {row['row']}: payload HAS an answer, grading it 'Không có câu trả lời.'/0 is a fabricated skip — FABRICATION GATE")
+
+
+def command_validate_own_sheet(args: argparse.Namespace) -> None:
+    """Gate-protected validation for a SINGLE grader to check its own mirror.
+
+    Enforces per-grader ownership + fabrication gates so parallel graders can
+    never influence or stub-race each other's mirror files.
+    """
+    batch = load_json(Path(args.batch))
+    mirror_map = {m["sheet_name"]: m["file"] for m in batch.get("mirror_files", [])}
+    if args.sheet not in mirror_map:
+        raise ValueError(f"sheet not assigned in this batch: {args.sheet}")
+    mirror_path = Path(mirror_map[args.sheet])
+    if not mirror_path.is_file():
+        raise ValueError(f"mirror file missing: {mirror_path}")
+    data = load_json(mirror_path)
+    if int(data.get("batch_id", -1)) != int(batch["batch_id"]):
+        raise ValueError("mirror batch_id does not match batch payload")
+    sheets = data.get("sheets", [])
+    if len(sheets) != 1 or sheets[0].get("sheet_name") != args.sheet:
+        raise ValueError(f"mirror must contain exactly sheet '{args.sheet}' (ownership gate)")
+    expected = expected_sheets(batch)
+    validate_single_sheet(expected, sheets[0], payload_batch=batch, strict=True)
+    print(json.dumps({"valid": True, "sheet_name": args.sheet, "sheet_count": 1}, ensure_ascii=False))
 
 
 def validate_partial(batch: dict[str, Any], partial: dict[str, Any]) -> None:
@@ -388,6 +440,8 @@ def build_parser() -> argparse.ArgumentParser:
     prepare.set_defaults(func=command_prepare)
     partial = commands.add_parser("validate-partial")
     partial.add_argument("--batch", required=True); partial.add_argument("--partial", required=True); partial.set_defaults(func=command_validate_partial)
+    own = commands.add_parser("validate-own-sheet")
+    own.add_argument("--batch", required=True); own.add_argument("--sheet", required=True); own.set_defaults(func=command_validate_own_sheet)
     review = commands.add_parser("validate-review")
     review.add_argument("--batch", required=True); review.add_argument("--review", required=True); review.set_defaults(func=command_validate_review)
     merge = commands.add_parser("merge")
