@@ -12,70 +12,70 @@
       "rows": [
         {
           "row": 2,
-          "score": 8,
-          "feedback": "Đáp ứng yêu cầu bắt buộc: tạo được trigger cho cả INSERT và DELETE trên ProductInventory để ghi audit vào ProductInventoryAudit, tách 2 trigger trg_audit_insert/trg_audit_delete dùng chung một hàm audit(f_type) với cờ 'I'/'D' — ý tưởng gọn. Tuy nhiên toàn bộ là PL/pgSQL của PostgreSQL chứ không phải SQL Server: NEW.* không tồn tại trong T-SQL, phải lấy dữ liệu từ bảng tạm INSERTED ('I') / DELETED ('D'); CREATE OR REPLACE TRIGGER ... EXEC audit('I') cũng là cú pháp PostgreSQL/Oracle, T-SQL dùng CREATE TRIGGER ... ON ProductInventory. Có lỗi chính tả cột LocaltionID (đề là LocationID) chưa xử lý và chưa chú ý ModifiedDate như gợi ý optional. Phần must vẫn đạt, mất nice vì không dùng INSERTED/DELETED."
+          "score": 9,
+          "feedback": "Ý đúng trọn: tạo đủ 2 trigger cho cả INSERT lẫn DELETE trên Production.ProductInventory, ghi bản ghi vào ProductInventoryAudit với cờ 'I'/'D' phân biệt qua hàm audit(f_type) — đúng bản chất yêu cầu audit trigger. Viết theo PL/pgSQL (NEW.*, LANGUAGE plpgsql, EXEC) thay T-SQL và có lỗi chính tả LocaltionID, nhưng theo rubric v3 đây chỉ là sai cú pháp/dialect nên không trừ quá 1-2 điểm (và dòng rubric optional cũng chính xác đã chỉ đúng lỗi LocaltionID)."
         },
         {
           "row": 3,
           "score": 9,
-          "feedback": "Phân biệt đầy đủ ba lệnh: TRUNCATE xóa toàn bộ dữ liệu và reset Identity, DELETE xóa từng bản ghi thường đi kèm WHERE và có thể Roll-back, DROP xóa hoàn toàn table. Ưu điểm là nêu được khác biệt về rollback giữa DELETE và TRUNCATE; chỉ thiếu ý DROP không thể rollback và ý DELETE kích hoạt trigger còn TRUNCATE thì không."
+          "feedback": "Đúng đủ ý must: TRUNCATE xóa toàn bộ dữ liệu và reset Identity, DELETE xóa từng bản ghi có WHERE và chậm hơn, DROP xóa hẳn cấu trúc bảng. Nêu được điểm nice then chốt: DELETE có thể rollback còn TRUNCATE thì không. Thiếu duy nhất ý optional là DELETE kích hoạt trigger còn TRUNCATE thì không."
         },
         {
           "row": 4,
           "score": 10,
-          "feedback": "Xác định chính xác toàn bộ khóa: PK của STUDENT(SSN), COURSE(Course#), BOOK(Book_ISBN#) và composite key cho ENROLL(SSN, Course#) lẫn BOOK_ADOPTION(Course#, Book_ISBN#); khóa ngoại tham chiếu đúng bảng đích (SSN→STUDENT, Course#→COURSE, Book_ISBN#→BOOK). Đáp án phủ đủ ý chính và cả ý composite key, đạt tối đa."
+          "feedback": "Xác định chuẩn toàn bộ khóa: PK STUDENT=SSN, COURSE=Course, BOOK=Book_ISBN; composite key (SSN, Course) cho ENROLL và (Course, Book_ISBN) cho BOOK_ADOPTION; khóa ngoại tham chiếu đúng bảng đích cùng cột. Phủ đủ cả must, nice và optional — đạt tối đa."
         },
         {
           "row": 5,
           "score": 10,
-          "feedback": "CREATE TABLE SKILL đúng cấu trúc: SkillNo SERIAL PRIMARY KEY tự động tăng, SkillName VARCHAR(50) NOT NULL bắt buộc, Note TEXT cho phép NULL đúng yêu cầu chỉ trường Note không bắt buộc. Gọn gàng, tiết kiệm; chỉ thiếu UNIQUE cho SkillName nếu muốn lấy ý optional."
+          "feedback": "CREATE TABLE SKILL đúng cấu trúc: SkillNo SERIAL (tương đương AUTO_INCREMENT/IDENTITY) làm PRIMARY KEY, SkillName NOT NULL, Note không ràng buộc (không NOT NULL) đúng ý đề. Dùng SERIAL thay cho IDENTITY/AUTO_INCREMENT là khác biệt dialect, không làm mất ý. Thiếu UNIQUE cho SkillName nên chưa ăn điểm optional."
         },
         {
           "row": 6,
-          "score": 5,
-          "feedback": "Logic cốt lõi đúng: UPDATE Employee SET Level = 2 WHERE Level = 1 và có ý lọc theo số năm làm việc từ StartDate. Nhưng chưa đạt trọn must-have: (1) thiếu PRINT @@ROWCOUNT — đề bắt buộc in số lượng bản ghi đã cập nhật; (2) AGE(CURRENT_DATE - StartDate) sai cú pháp, không tính đúng số năm làm việc (đúng ra là DATEDIFF(year, StartDate, GETDATE()) >= 3 ở SQL Server); (3) 'USING plpgsql' không phải từ khóa hợp lệ (phải là LANGUAGE plpgsql), và bài viết theo PL/pgSQL của PostgreSQL chứ không phải T-SQL của SQL Server. Must chỉ đạt một phần, không đủ 8."
+          "score": 8,
+          "feedback": "Ý đúng bản chất: viết Stored Procedure cập nhật Level = 2 cho nhân viên Level = 1 và lọc theo thâm niên ít nhất 3 năm từ StartDate (dùng AGE/EXTRACT YEAR thay cho DATEDIFF — logic tính năm đúng; 'USING plpgsql' chỉ là sai từ khóa của LANGUAGE, thuộc nhóm sai cú pháp tối đa trừ 1-2 điểm). Chưa in ra số lượng bản ghi cập nhật (@@ROWCOUNT) nên mất điểm nice; chưa bỏ qua nhân viên đã nghỉ việc (Status=2) theo gợi ý optional."
         },
         {
           "row": 7,
           "score": 10,
-          "feedback": "Truy vấn chuẩn: SELECT * FROM NHANVIEN WHERE Tuoi >= 23 AND QueQuan LIKE '%Bình Định%'. Kết hợp đúng 2 điều kiện bằng AND, select toàn bộ thông tin nhân viên như đề yêu cầu, đạt tối đa."
+          "feedback": "SELECT * FROM NHANVIEN kết hợp đúng 2 điều kiện Tuoi >= 23 AND QueQuan chứa 'Bình Định' — dùng LIKE '%Bình Định%' thay vì so sánh chính xác là cách xử lý an toàn về khoảng trắng/dấu, vẫn đúng ý AND hai điều kiện theo rubric. Đủ must và nice, đạt tối đa."
         },
         {
           "row": 8,
-          "score": 6,
-          "feedback": "Yêu cầu 1 đạt: subquery GROUP BY Employee_Number, HAVING COUNT(Skill_Code) > 1, có DISTINCT để liệt kê nhân viên có nhiều kỹ năng. Yêu cầu 2 sai nặng: CREATE OR REPLACE VIEW employee_has_multi_skill() AS $$ BEGIN...END $$ là khối hàm procedural của PostgreSQL chứ không phải cú pháp CREATE VIEW ... AS <câu SELECT> thuần; đồng thời không JOIN bảng Department để lấy Department_Name — cột bắt buộc của đề. Must chỉ đạt nửa (subquery) nên không đạt điểm 8."
+          "score": 7,
+          "feedback": "Yêu cầu 1 đạt ý: GROUP BY Employee_Number, HAVING COUNT(Skill_Code) > 1 với DISTINCT để liệt kê nhân viên có nhiều kỹ năng. Yêu cầu 2 viết View theo cấu trúc hàm procedural của PostgreSQL (CREATE ... VIEW (...) AS $$ BEGIN ... END $$) và thiếu JOIN bảng Department để lấy Department_Name — cột bắt buộc của view theo đề. Ý subquery/group đúng là chính nên không rơi về 0, nhưng view sai cấu trúc nặng hơn một sai cú pháp thông thường vì mất hẳn cột Department_Name, kết hợp thiếu bảng Department là thiếu ý."
         },
         {
           "row": 9,
           "score": 8,
-          "feedback": "Định nghĩa trigger đúng bản chất: khối lệnh tự động thực thi khi có sự kiện tác động lên table, ví dụ audit data, mã hóa dữ liệu trước khi insert. Nhưng còn hời hợt: chưa nêu trigger là dạng Stored Procedure đặc biệt, chưa liệt kê các loại BEFORE / AFTER / INSTEAD OF (nice), cũng chưa nhắc rủi ro khó theo dõi/hiệu ứng dây chuyền (optional)."
+          "feedback": "Đúng bản chất must: trigger là khối lệnh tự động thực thi khi có sự kiện tác động lên table mà không cần gọi thủ công, dùng khi cần xử lý ngay tại thời điểm sự kiện xảy ra (ví dụ audit data, mã hóa dữ liệu trước khi insert). Chưa nhấn rõ trigger là dạng Stored Procedure đặc biệt; thiếu các loại BEFORE / AFTER / INSTEAD OF (nice) và rủi ro khó theo dõi/hiệu ứng dây chuyền (optional)."
         },
         {
           "row": 10,
           "score": 10,
-          "feedback": "Đúng yêu cầu: SELECT e.EmpName, e.Email, es.SkillNo, JOIN Employee với EMP_SKILL qua EmpNo (quan hệ đúng theo mô hình), ORDER BY e.EmpName ASC theo thứ tự tăng dần của tên. Đủ cột, kết quả không thiếu dữ liệu, đạt tối đa."
+          "feedback": "Select đúng các cột, JOIN đúng Employee với EMP_SKILL qua EmpNo, ORDER BY e.EmpName ASC theo yêu cầu. Truy vấn sạch, không thiếu dữ liệu, đạt tối đa."
         },
         {
           "row": 11,
           "score": 8,
-          "feedback": "Trả lời đúng bản chất: DISTINCT dùng để loại bỏ các dữ liệu trùng lặp trong kết quả trả về, chỉ giữ giá trị duy nhất. Đúng ý must; chỉ thiếu ví dụ minh họa kiểu SELECT DISTINCT ThanhPho FROM KhachHang để lấy điểm nice, nội dung ngắn gọn."
+          "feedback": "Đúng ý must: DISTINCT loại bỏ các dữ liệu trùng lặp trong kết quả trả về, chỉ giữ giá trị duy nhất. Thiếu ví dụ minh họa (SELECT DISTINCT ThanhPho FROM KhachHang) nên chưa ăn điểm nice."
         },
         {
           "row": 12,
           "score": 10,
-          "feedback": "Dùng COALESCE(n.QueQuan, N'Cõi trên xuống') xử lý NULL — tương đương ISNULL/CASE WHEN mà rubric yêu cầu, select đủ 3 cột MaNV, HoTenNV, Quê quán từ NHANVIEN. Đúng và gọn, đạt tối đa."
+          "feedback": "Dùng COALESCE(n.QueQuan, 'Cõi trên xuống') để thay NULL — tương đương ISNULL/CASE WHEN theo rubric nice; select đủ 3 cột MaNV, HoTenNV, QueQuan từ NHANVIEN. Đúng và đầy đủ, đạt tối đa."
         },
         {
           "row": 13,
           "score": 10,
-          "feedback": "JOIN đúng cả 4 bảng NHANVIEN → BANHANG → SANPHAM → LOAISP qua các khóa ngoại, select đủ 9 cột theo yêu cầu (MaNV, HoTenNV, GioiTinh, QueQuan, MaSP, TenSP, MaLoaiSP, TenLoaiSP, SoLuongDaBan), lọc đúng nhóm nhân viên đã bán hàng qua BANHANG. Câu lệnh sạch, đạt tối đa."
+          "feedback": "JOIN đúng 4 bảng NHANVIEN → BANHANG → SANPHAM → LOAISP qua các khóa nối (MaNV, MaSP, MaLoaiSP), select đủ các cột yêu cầu, lọc đúng nhóm nhân viên đã bán hàng vì đi qua inner join BANHANG. Đầy đủ và chính xác, đạt tối đa."
         }
       ],
-      "overall_comment": "Bài làm nắm chắc nhóm SQL cơ bản: câu SELECT điều kiện (row 7), COALESCE xử lý NULL (row 12) và JOIN cả 4 bảng lấy đủ cột (row 13) đạt điểm tối đa; bảng khóa chính – khóa ngoại (row 4) và CREATE TABLE với SERIAL (row 5) cũng rất tốt. Điểm yếu rõ nhất là nền tảng SQL Server: phần Trigger/Stored Procedure/View (row 2, 6, 8) viết theo cú pháp PL/pgSQL của PostgreSQL (NEW.*, EXEC audit(), USING plpgsql, RETURN NEW), trong đó View (row 8) sai hoàn toàn cấu trúc CREATE VIEW và thiếu bảng Department; Stored Procedure (row 6) sai cú pháp khai báo và cách tính số năm AGE(CURRENT_DATE - StartDate) không hợp lệ, thiếu in số dòng cập nhật. Lý thuyết trả lời đúng bản chất nhưng hời hợt: chưa nêu khả năng rollback của DROP (row 3), chưa liệt kê BEFORE/AFTER/INSTEAD OF (row 9), chưa có ví dụ minh họa cho DISTINCT (row 11).",
-      "raw_score": 104.0,
-      "total_score": 8.67,
+      "overall_comment": "Theo rubric v3 (chấm theo ý đúng, sai cú pháp tối đa trừ 1-2 điểm), bài làm của AnhTP43 có nền tảng SQL tốt: nhóm câu lệnh đơn giản (row 7 SELECT điều kiện, row 10 JOIN+ORDER BY, row 12 COALESCE xử lý NULL, row 13 JOIN 4 bảng) và nhóm lý thuyết khóa chính/ngoại (row 4), CREATE TABLE (row 5) đều đạt tối đa. Điểm giảm chủ yếu do quen viết theo PostgreSQL thay SQL Server: trigger (row 2) dùng NEW.* và LANGUAGE plpgsql nhưng ý idea audit trigger vẫn đúng đủ nên chỉ bị trừ nhẹ; Stored Procedure (row 6) đúng logic UPDATE+điều kiện 3 năm nhưng thiếu in @@ROWCOUNT. Điểm yếu còn lại là View (row 8) sai nặng cấu trúc và thiếu JOIN Department, và một số câu lý thuyết trả lời đúng nhưng ngắn nên bỏ sót ý nice/optional (row 9 chưa liệt kê các loại trigger, row 11 thiếu ví dụ DISTINCT).",
+      "raw_score": 109.0,
+      "total_score": 9.08,
       "max_score": 120,
-      "percentage": 86.67,
+      "percentage": 90.83,
       "answered_count": 12,
       "question_count": 12
     },
@@ -84,13 +84,13 @@
       "rows": [
         {
           "row": 2,
-          "feedback": "Nêu đúng bản chất Stored Procedure là tập hợp câu lệnh SQL lưu sẵn trong CSDL, gọi được như hàm và có thể truyền tham số; ưu điểm tái sử dụng, giảm băng thông mạng đều chạm rubric. Nhược điểm nhắc khó quản lý khi có nhiều procedure nhưng chưa khái quát thành các điểm chuẩn: tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL.",
-          "score": 6
+          "feedback": "Nêu đúng bản chất Stored Procedure là tập hợp câu lệnh SQL lưu sẵn trong CSDL, gọi và truyền tham số được như hàm bình thường — chạm đúng must-have. Ưu điểm: nêu được tái sử dụng và giảm băng thông (chỉ gửi CALL + tên) — 2/4 ý ưu điểm rubric; thiếu bảo mật và tăng hiệu năng. Nhược điểm chỉ nêu 'nhiều procedure khó quản lý' — gần với 'tốn bộ nhớ server/khó gỡ lỗi' nhưng chưa khái quát chuẩn; chủ yếu thiếu ý phụ thuộc hệ CSDL. Thực chất đã mô tả cách gọi bằng CALL nên coi như chạm nice. Ý đúng là chính, trừ nhẹ vì phần ưu/nhược điểm chỉ phủ một phần rubric.",
+          "score": 8
         },
         {
           "row": 3,
-          "feedback": "Sai dạng đối tượng: đề yêu cầu User Defined Function nhưng lại tạo Procedure, cấu trúc sai cú pháp (begin; ... commit; đứng trong procedure, không có RETURNS/RETURN). Phần SELECT lọc đúng 5 cột với LIKE '%CA%' và Color = 'Black' nên vẫn ghi nhận năng lực lọc điều kiện, nhưng không tạo được hàm như yêu cầu.",
-          "score": 3
+          "feedback": "Sai dạng đối tượng: đề yêu cầu User Defined Function nhưng lại tạo Procedure. Theo tinh thần chấm ý đúng: phần SELECT lọc đúng 5 cột với LIKE '%CA%' và Color = 'Black' — bắt được trọn bộ ý lọc dữ liệu của đề, đạt phần lớn must-have về nội dung truy vấn. Nhưng bản thân việc 'tạo hàm UDF' — ý trung tâm của câu — không có (tạo Procedure thay vì Function, cấu trúc begin;/commit; vô nghĩa, không có RETURNS/RETURN), nên mất một phần must.Sai cú pháp/dialect thêm trừ nhẹ trong giới hạn.",
+          "score": 4
         },
         {
           "row": 4,
@@ -105,7 +105,7 @@
         {
           "row": 6,
           "feedback": "Requirement 1: subquery với GROUP BY + HAVING COUNT(Skill_Code) > 1 đúng hướng, nhưng select * thay vì chỉ 2 cột (Employee_Number, Employee_Name) theo đề. Requirement 2: cú pháp CREATE VIEW hoàn toàn sai (create or replace view as requirement2view (...)), View không join bảng Department nên thiếu Department_Name. Subquery đạt, View không chạy được.",
-          "score": 5
+          "score": 4
         },
         {
           "row": 7,
@@ -125,7 +125,7 @@
         {
           "row": 10,
           "feedback": "Truy vấn lệch schema: bảng trong đề là EMP nhưng truy vấn từ 'nhanvien', lọc theo deptno thay vì MAJOR, và dùng OR trong khi đề hỏi nhân viên có CHUYÊN NGÀNH Toán VÀ Khoa học máy tính; đề cho 1 cột MAJOR nên cần giải thích edge-case nhưng đáp án không nêu. Kết quả không thể chạy đúng với schema đã cho.",
-          "score": 1
+          "score": 2
         },
         {
           "row": 11,
@@ -143,11 +143,11 @@
           "score": 8
         }
       ],
-      "overall_comment": "Bài của BaoVN5 cho thấy tư duy khái niệm khá tốt ở các câu lý thuyết ngắn (Composite Key, Table, Stored Procedure) và viết được một số thao tác CRUD cơ bản chuẩn form (UPDATE với WHERE, CREATE TABLE có PK). Tuy nhiên ở các câu coding medium/hard bộc lộ nhiều lỗ hổng: nhầm Procedure với Function, cú pháp SQL Server không ổn (nháy kép, mệnh đề begin/commit không hợp lệ), thiếu NOT NULL ở bảng bắt buộc, và các truy vấn nhiều bảng thường bị cut/gõ sai khiến không chạy được. Cần rèn thêm thói quen viết truy vấn chạy được và đọc kỹ yêu cầu đề trước khi code.",
-      "raw_score": 62.0,
-      "total_score": 5.17,
+      "overall_comment": "Đợt chấm lại theo rubric v3 (chấm theo ý đúng, sai cú pháp/dialect chỉ trừ tối đa 1-2 điểm): BaoVN5 có tư duy khái niệm khá ở các câu lý thuyết (Stored Procedure, Composite Key, Table) và thao tác CRUD cơ bản chuẩn form (UPDATE WHERE, nhận diện PK/FK chính xác). Điểm yếu nổi bật: nhầm Procedure với Function ở cả 2 câu UDF nên mất ý trung tâm; cú pháp nhiều câu coding bị cắt cụt/vô nghĩa khiến truy vấn không chạy được; câu lọc MAT/CSI lại sai cả bảng và cột so với schema đề cho. Không có câu bỏ trống; tổng 65/120, trung bình 5.42 điểm (thang 10).",
+      "raw_score": 65.0,
+      "total_score": 5.42,
       "max_score": 120,
-      "percentage": 51.67,
+      "percentage": 54.17,
       "answered_count": 12,
       "question_count": 12
     },
@@ -660,8 +660,8 @@
       "rows": [
         {
           "row": 2,
-          "feedback": "View thiếu join bảng Don_Hang nên không lấy được So_Luong; bạn dùng COUNT(*) * Don_Gia thay cho Don_Gia * So_Luong nên cột thành tiền sai theo rubric (must-have yêu cầu phép nhân Don_Gia * So_Luong). GROUP BY và JOIN USING dùng đúng kiểu, nhưng phải join đủ các bảng liên quan (Don_Hang) mới đạt must-have, do đó chỉ đạt một phần.",
-          "score": 5
+          "feedback": "View tạo đúng và join đủ 3 bảng Relationship Don_Hang–Khach_Hang–San_Pham để lấy Ten_KH, Ngay_DH, Ten_SP — đạt ý chính theo rubric. Tuy nhiên cột Thanh_Tien dùng COUNT(*) * Don_Gia thay vì Don_Gia * So_Luong, thiếu So_Luong trong danh sách cột; đây là sai logic công thức (không chỉ lỗi cú pháp) nên mất phần nice-to-have. Sai cú pháp ngoài ra không bị trừ thêm.",
+          "score": 8
         },
         {
           "row": 3,
@@ -670,42 +670,42 @@
         },
         {
           "row": 4,
-          "feedback": "Tốt: dùng đúng cú pháp WITH CTE (TBPB) tính AVG(EDLEVEL) theo DEPTNO, rồi JOIN lại với EMP so sánh từng nhân viên với trung bình phòng ban; điều kiện WHERE t.tb < e.EDLEVEL đúng logic 'lương/EDLEVEL nhân viên > trung bình' theo rubric. Đạt điểm tối đa.",
+          "feedback": "Đúng ý: dùng WITH CTE (TBPB) tính AVG(EDLEVEL) theo DEPTNO rồi join với EMP, điều kiện so sánh e.EDLEVEL > trung bình phòng ban đúng logic đề; lỗi cú pháp nhỏ (như JOIN USING, chữ DeptNO) chỉ được trừ tối đa trong giới hạn cho phép. Đánh giá theo ý đúng nên đạt điểm tối đa.",
           "score": 10
         },
         {
           "row": 5,
-          "feedback": "Tạo bảng đúng cấu trúc: DeptNo SERIAL PRIMARY KEY thỏa khóa chính tự động tăng; DeptName VARCHAR(20) NOT NULL đúng; Note VARCHAR(50) không NOT NULL đúng theo rubric. Đạt điểm tối đa.",
+          "feedback": "Đúng cấu trúc theo ý: DeptNo SERIAL PRIMARY KEY là khóa chính tự động tăng, DeptName NOT NULL, Note không bắt buộc (bỏ NOT NULL) — đáp đủ must-have và nice-to-have; SERIAL thay AUTO_INCREMENT thuộc dạng khác biệt dialect, không bị trừ quá 1-2 điểm. Thiếu UNIQUE cho DeptName (optional) nhưng điểm đã trần 10.",
           "score": 10
         },
         {
           "row": 6,
-          "feedback": "Định nghĩa Stored Procedure đúng ở mức khái quát (cơ chế lưu trữ các thao tác trong CSDL, gọi ra khi cần) nhưng chưa đủ: thiếu phần Ưu điểm (tái sử dụng, bảo mật, giảm lưu lượng mạng, tăng hiệu năng) và Nhược điểm (tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL) là trọng tâm must-have của câu hỏi; không đề cập cách gọi SP nên mất phần nice.",
-          "score": 4
+          "feedback": "Định nghĩa Stored Procedure đúng ý (tập thao tác lưu sẵn trong CSDL, gọi ra khi cần) nhưng chỉ trả lời được một phần nhỏ của must-have: thiếu hoàn toàn phần Ưu điểm (tái sử dụng, bảo mật, giảm lưu lượng mạng) và Nhược điểm (tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL) là trọng tâm câu hỏi; cũng không đề cập cách gọi SP (nice-to-have).",
+          "score": 3
         },
         {
           "row": 7,
-          "feedback": "Cú pháp lỗi: SELECT thiếu danh sách cột nên câu lệnh không chạy được. Điều kiện giá viết ngược so với đề (đề yêu cầu GiaBan < 20000, bài làm viết GiaBan > 20000). Phần NOT EXISTS (SELECT 1 FROM BANHANG ...) tìm sản phẩm chưa bán viết đúng logic, nhưng vì must-have điều kiện giá ngược nên chỉ đạt một phần.",
-          "score": 4
+          "feedback": "Ý 'sản phẩm chưa bán' viết đúng với NOT EXISTS con theo BANHANG. Tuy nhiên điều kiện giá viết ngược đề: đề yêu cầu GiaBan < 20000, bài làm là GiaBan > 20000 — đây là sai logic điều kiện, không phải lỗi cú pháp, nên mất phần lớn must-have. Thiếu danh sách cột sau SELECT là lỗi cú pháp, chỉ tính trừ tối đa trong giới hạn cho phép.",
+          "score": 5
         },
         {
           "row": 8,
-          "feedback": "Đúng rubric: lọc NHANVIEN theo Tuoi, WHERE Tuoi >= 25 AND Tuoi <= 35 tương đương BETWEEN 25 AND 35. Đạt điểm tối đa.",
+          "feedback": "Đúng ý và đúng điều kiện: lọc NHANVIEN với Tuoi >= 25 AND Tuoi <= 35 (tương đương BETWEEN 25 AND 35, tính cả hai đầu mút). Đạt điểm tối đa.",
           "score": 10
         },
         {
           "row": 9,
-          "feedback": "Câu trả lời về mệnh đề ORDER BY không khớp yêu cầu của rubric câu này (rubric yêu cầu viết lệnh ALTER TABLE EMPLOYEE ADD cột Email, kèm UNIQUE, NOT NULL) nên không đạt điểm theo thang chấm hiện hành.",
+          "feedback": "Câu trả lời nói về mệnh đề ORDER BY (khi nào dùng để sắp xếp) trong khi rubric của câu này yêu cầu viết lệnh ALTER TABLE EMPLOYEE ADD cột Email kèm ràng buộc UNIQUE/NOT NULL — nội dung hoàn toàn không khớp câu được chấm nên không đạt ý nào theo rubric.",
           "score": 0
         },
         {
           "row": 10,
-          "feedback": "Tốt: xác định đủ PK từng bảng (SSN, Course#, composite SSN+Course cho Enroll, Course+Book_ISBN cho Book_Adoption) và các khóa ngoại tương ứng (SSN->Student, Course->Course, Book_ISBN->Book); chỉ rõ ràng composite key của Enroll và Book_Adoption, đạt cả optional bonus của rubric.",
+          "feedback": "Xác định đúng PK từng bảng (SSN, Course#, BOOK_ISBN) và chỉ rõ composite key của ENROLL (SSN+Course) và BOOK_ADOPTION (Course+Book_ISBN); nêu đúng FK của ENROLL (SSN, Course) và BOOK_ADOPTION (Course, Book_ISBN). Đủ cả optional (composite key). Điểm trần 10.",
           "score": 10
         },
         {
           "row": 11,
-          "feedback": "Truy vấn tốt: join SANPHAM với LOAISP đúng khóa MaLoaiSP (USING), WHERE GiaBan IS NOT NULL đúng nice-to-have, chỉ chọn các cột được yêu cầu thay vì SELECT * và dùng alias gọn gàng — đạt cả optional của rubric.",
+          "feedback": "Đúng rubric: chọn đủ cột yêu cầu và join SANPHAM với LOAISP qua MaLoaiSP; WHERE GiaBan IS NOT NULL đạt nice-to-have; có alias bảng và chỉ chọn cột cần thiết thay vì SELECT * (đủ optional). Đạt điểm tối đa.",
           "score": 10
         },
         {
@@ -715,15 +715,15 @@
         },
         {
           "row": 13,
-          "feedback": "Trả lời đúng cốt lõi theo rubric: Transaction là đơn vị công việc logic gồm nhiều thao tác CSDL, hoặc thành công hoặc thất bại (all-or-nothing), dùng để đảm bảo tính nhất quán của dữ liệu và tránh sai lệch. Chưa nêu các lệnh BEGIN TRANSACTION/COMMIT/ROLLBACK (nice) và ví dụ chuyển tiền (opt), nên dừng ở mức must.",
+          "feedback": "Đúng ý cốt lõi theo rubric: Transaction là đơn vị công việc logic gồm nhiều thao tác, hoặc thành công hoặc thất bại (all-or-nothing), nhằm đảm bảo tính nhất quán dữ liệu. Thiếu các lệnh control BEGIN TRANSACTION/COMMIT/ROLLBACK (nice-to-have).",
           "score": 8
         }
       ],
-      "overall_comment": "Nhận xét chung: Học viên nắm tốt phần JOIN cơ bản, CTE và định nghĩa PK/FK (các câu DBA-H-12, DBA-E-02, DBA-E-23, DBA-M-37 đạt điểm tối đa hoặc gần tối đa). Tuy nhiên còn 2 câu bỏ trống (trigger AdventureWorks DBA-H-20 và inline TVF DBA-M-30) và 1 câu trả lời lệch yêu cầu đề (DB-E-08 rubric hỏi ALTER TABLE ADD cột Email nhưng bài lại trả lời về ORDER BY). Phần View đơn hàng (DBA-M-21) lỗi logic khi thiếu join Don_Hang và dùng COUNT(*) thay So_Luong; câu lọc sản phẩm theo giá (DBA-H-21) bị ngược điều kiện giá và sai cú pháp (thiếu danh sách cột sau SELECT), riêng phần NOT EXISTS tìm sản phẩm chưa bán viết đúng ý. Định nghĩa lý thuyết Stored Procedure (DB-H-20) còn hụt phần ưu/nhược điểm là trọng tâm câu hỏi. Cần rèn thói quen đọc kỹ đề (chiều điều kiện, đúng trọng tâm câu hỏi) và hoàn thành đủ 12 câu.",
-      "raw_score": 71.0,
-      "total_score": 5.92,
+      "overall_comment": "Điểm mạnh: nắm chắc kỹ thuật CTE, DDL tạo bảng (khoá chính tự động tăng), truy vấn lọc/join cơ bản, nhận diện PK/FK và composite key, hiểu Transaction ở mức đúng ý — đúng tinh thần chấm ý chính. Điểm yếu: câu View bán sai công thức Thanh_Tien (COUNT(*) * Don_Gia thay vì Don_Gia * So_Luong, thiếu So_Luong), câu liệt kê sản phẩm viết ngược chiều điều kiện giá so với đề, câu lý thuyết Stored Procedure thiếu hẳn ưu/nhược điểm, câu rơi vào phần ALTER TABLE ADD Email nhưng trả lời lạc đề. Có 2 câu bỏ trống. Sai cú pháp nhẹ được bỏ qua theo rubric v3; các lỗi mất điểm đều do sai logic/ý.",
+      "raw_score": 74.0,
+      "total_score": 6.17,
       "max_score": 120,
-      "percentage": 59.17,
+      "percentage": 61.67,
       "answered_count": 10,
       "question_count": 12
     },
@@ -1161,10 +1161,10 @@
     }
   ],
   "class_summary": {
-    "raw_score": 1139.0,
-    "total_score": 5.93,
+    "raw_score": 1150.0,
+    "total_score": 5.99,
     "max_score": 1920,
-    "percentage": 59.32,
+    "percentage": 59.9,
     "answered_count": 172,
     "question_count": 192
   }
