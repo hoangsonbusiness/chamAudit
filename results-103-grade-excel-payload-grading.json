@@ -1,0 +1,1171 @@
+{
+  "source_payload": "/home/ast/Workspace_ClaudeCode/chamAudit/results-103-grade-excel-payload.json",
+  "rubric": {
+    "must_have_max": 8,
+    "nice_to_have_max": 2,
+    "optional_bonus": 1,
+    "score_cap": 10
+  },
+  "sheets": [
+    {
+      "sheet_name": "AnhTP43",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Tách hàm audit(f_type) và 2 trigger riêng trg_audit_insert ('I') / trg_audit_delete ('D') trên ProductInventory — ý tưởng ghi nhận audit cho cả INSERT và DELETE đúng hướng must-have. Tuy nhiên thân hàm chỉ dùng NEW.*, chỉ đúng cho nhánh INSERT; khi AFTER DELETE thì NEW không có giá trị (dữ liệu nằm ở OLD) nên nhánh audit khi Delete sẽ lỗi/không ghi được bản ghi vào ProductInventoryAudit. Đặt tên cột sai 'LocaltionID'. Chưa dùng bảng INSERTED/DELETED với cờ 'I'/'D' như nice-to-have, chưa gộp 1 trigger duy nhất phân biệt hành động (optional).",
+          "score": 3
+        },
+        {
+          "row": 3,
+          "feedback": "Phân biệt đúng bản chất cả 3 lệnh: TRUNCATE xóa toàn bộ dữ liệu, reset identity, không dùng WHERE; DELETE xóa từng hàng, dùng WHERE; DROP xóa cả cấu trúc bảng. Nêu được DELETE có thể rollback, TRUNCATE không thể rollback (một phần nice-to-have). Còn thiếu: DROP không thể rollback, so sánh ghi log/tốc độ rõ ràng, và optional là DELETE kích hoạt trigger còn TRUNCATE thì không.",
+          "score": 7
+        },
+        {
+          "row": 4,
+          "feedback": "Liệt kê đúng PK cho STUDENT(SSN), COURSE(Course#), BOOK(Book_ISBN#) và nhận ra PK của ENROLL, BOOK_ADOPTION là composite key (optional đạt). FK của ENROLL (SSN→STUDENT, Course#→COURSE) và BOOK_ADOPTION (Course#→COURSE, Book_ISBN#→BOOK) xác định đúng. Sai sót: PK của ENROLL thiếu Quarter (lược đồ đánh dấu # là SSN, Course#, Quarter) và BOOK_ADOPTION thiếu Quarter (Course#, Quarter, Book_ISBN#); với BOOK_ADOPTION cấu hình PK còn thiếu thành phần so với lược đồ nên must-have chưa trọn vẹn.",
+          "score": 5
+        },
+        {
+          "row": 5,
+          "feedback": "CREATE TABLE SKILL đúng cấu trúc, đủ 3 cột, SkillNo là PRIMARY KEY tự động tăng (SERIAL thay cho IDENTITY/AUTO_INCREMENT — vẫn đạt mục tiêu auto-increment), SkillName NOT NULL, Note cho phép NULL — đạt must-have và nice-to-have (bắt buộc mọi trường trừ Note). Thiếu ràng buộc UNIQUE cho SkillName ở mức optional.",
+          "score": 5
+        },
+        {
+          "row": 6,
+          "feedback": "Ý chính đúng: UPDATE SET Level = 2 WHERE Level = 1 kèm điều kiện làm việc >= 3 năm từ StartDate — đạt phần must-have cốt lõi. Nhưng thiếu hoàn toàn phần in ra số lượng bản ghi đã cập nhật (@@ROWCOUNT); cú pháp procedure lỗi: 'USING plpgsql' không hợp lệ (phải là LANGUAGE plpgsql); EXTRACT(YEAR FROM AGE(CURRENT_DATE - StartDate)) đặt sai tham số của AGE (cần AGE(CURRENT_DATE, StartDate) trả interval). Chưa bỏ qua nhân viên Status = 2 (optional). Must-have đã đạt nhưng nice-to-have gần như không đạt.",
+          "score": 3
+        },
+        {
+          "row": 7,
+          "feedback": "SELECT * FROM NHANVIEN với WHERE kết hợp Tuoi >= 23 AND QueQuan LIKE '%Bình Định%' — đáp ứng must-have và nice-to-have (dùng LIKE '%...%' thay cho '=', chấp nhận được và có thể khớp cả chuỗi có khoảng trắng thừa). Chưa giải thích vì sao dùng AND thay OR và chưa dùng LTRIM/RTRIM (optional).",
+          "score": 5
+        },
+        {
+          "row": 8,
+          "feedback": "YC1: dùng JOIN + GROUP BY + HAVING COUNT(est.Skill_Code) > 1 với DISTINCT cho kết quả logic đúng nhưng đề yêu cầu dùng SUB-QUERY nên chưa khớp phương thức. YC2: cú pháp tạo View sai hoàn toàn (CREATE OR REPLACE VIEW ... () AS $$ BEGIN ... END $$ là cú pháp function, không phải CREATE VIEW ... AS SELECT); View còn thiếu cột Department_Name và không join bảng Department như yêu cầu — phần View cơ bản chưa đạt. Must-have chỉ đạt một nửa (Subquery đúng logic nhưng sai phương thức, View sai).",
+          "score": 2
+        },
+        {
+          "row": 9,
+          "feedback": "Định nghĩa trigger đúng bản chất: khối lệnh tự thực thi khi có sự kiện tác động lên bảng, kèm ví dụ sử dụng phù hợp (audit data, mã hóa dữ liệu trước khi insert) — đủ must-have. Chưa nêu các loại trigger BEFORE/AFTER/INSTEAD OF (nice-to-have) và chưa nhắc rủi ro gây hiệu ứng dây chuyền (optional).",
+          "score": 3
+        },
+        {
+          "row": 10,
+          "feedback": "Truy vấn select đúng các cột EmpName, Email, SkillNo, JOIN đúng EMPLOYEE với EMP_SKILL qua EmpNo, có ORDER BY EmpName ASC — đạt đủ must-have và nice-to-have. Kết quả không thiếu dữ liệu. Thiếu bảng SKILL nhưng mã kỹ năng đã có sẵn trong EMP_SKILL nên vẫn thỏa yêu cầu đầu ra. Chưa nêu sự khác biệt INNER JOIN vs LEFT JOIN (optional).",
+          "score": 5
+        },
+        {
+          "row": 11,
+          "feedback": "Trả lời đúng bản chất DISTINCT: loại bỏ dữ liệu trùng lặp của kết quả trả về — đủ must-have. Chưa minh họa bằng ví dụ SELECT DISTINCT (nice-to-have), chưa nhắc ảnh hưởng hiệu năng sort/hash (optional).",
+          "score": 3
+        },
+        {
+          "row": 12,
+          "feedback": "Dùng COALESCE(QueQuan, 'Cõi trên xuống') thay giá trị NULL — tương đương ISNULL/CASE WHEN ở nice-to-have; chọn đúng 3 cột MaNV, HoTenNV, QueQuan từ NHANVIEN — đạt cả must-have và nice-to-have. Chưa xử lý QueQuan là chuỗi rỗng với NULLIF (optional).",
+          "score": 5
+        },
+        {
+          "row": 13,
+          "feedback": "JOIN đúng và đủ 4 bảng NHANVIEN → BANHANG → SANPHAM → LOAISP theo chuỗi khóa ngoại, select đủ các cột yêu cầu (ma, tên, giới tính, quê quán, mã/tên SP, mã/tên loại SP, số lượng đã bán), dùng alias gọn gàng — đạt cả must-have và nice-to-have. Chưa thêm ORDER BY theo mã/tên NV hoặc alias rõ cho cột trùng tên (optional).",
+          "score": 5
+        }
+      ],
+      "overall_comment": "- Kiến thức tốt: Nắm vững các thao tác SQL nền tảng — CREATE TABLE đúng ràng buộc (PK auto-increment, NOT NULL), truy vấn SELECT với WHERE, JOIN nối nhiều bảng (4 bảng liên quan) đều chuẩn xác, chọn đủ cột, dùng COALESCE xử lý NULL tốt. Nhận diện khóa chính/khóa ngoại và composite key chính xác về cơ bản.\n- Kiến thức cần cải thiện: Phần nâng cao khá yếu và mixing cú pháp giữa các hệ CSDL — trigger DELETE dùng NEW.* (sai, phải dùng OLD/DELETED), CREATE PROCEDURE ivà CREATE VIEW viết sai cú pháp (khởi tạo kiểu function trong View), chưa biết bảng INSERTED/DELETED, @@ROWCOUNT, các loại trigger BEFORE/AFTER/INSTEAD OF.\n- Mức độ hoàn chỉnh: Trả lời đủ 12/12 câu, phần Medium/Easy làm tốt ở mức đạt cơ bản (5/10), nhưng 3 câu Hard gần như không đạt (2-3 điểm) — thiếu đúng theo phương thức đề bài (SUB-QUERY), View sai hoàn toàn, phần audit trigger không hoạt động cho DELETE.\n- Hướng cải thiện: Luyện cú pháp CREATE VIEW...AS SELECT chuẩn, cấu trúc trigger SQL Server dùng inserted/deleted và OLD/NEW cho PostgreSQL, in @@ROWCOUNT trong stored procedure; đọc kỹ phương thức đề bài yêu cầu (Subquery, View đủ cột với bảng join) trước khi viết đáp án.",
+      "raw_score": 51.0,
+      "total_score": 4.25,
+      "max_score": 120,
+      "percentage": 42.5,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "BaoVN5",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Trả lời đúng bản chất Stored Procedure là tập câu lệnh SQL lưu sẵn trong CSDL, gọi được và truyền tham số. Điểm được các ưu điểm chính (tái sử dụng, tiết kiệm băng thông). Thiếu nhóm ưu điểm quan trọng (bảo mật, tăng hiệu năng, giảm network round-trip rõ hơn). Nhược điểm mang tính quản lý, chưa nhắc tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL. Không so sánh với Function, không nói cách gọi cụ thể (CALL/EXEC).",
+          "score": 8.0
+        },
+        {
+          "row": 3,
+          "feedback": "Không viết UDF mà viết procedure (create or replace procedure) — sai yêu cầu 'Viết User Defined Function'; cú pháp 'begin;' và 'commit;' không hợp lệ trong SQL Server/AdventureWorks; không dùng dấu nháy đơn quanh '%CA%' và 'Black'. Tuy nhiên logic truy vấn đúng: SELECT đủ 5 cột, WHERE ProductNumber LIKE '%CA%' AND Color = 'Black' — đạt được phần nice-to-have.",
+          "score": 5.0
+        },
+        {
+          "row": 4,
+          "feedback": "Được bảng Actor với khóa chính (ActorName PRIMARY KEY) và đủ 4 cột, câu lệnh đúng cú pháp. Nhưng sai kiểu dữ liệu: lương trung bình một phim nên dùng DECIMAL/NUMERIC chứ không phải INTEGER; thiếu NOT NULL cho tất cả các trường dù đề yêu cầu 'tất cả các trường đều bắt buộc'; không tự thêm ActorID tự tăng như phần optional.",
+          "score": 5.5
+        },
+        {
+          "row": 5,
+          "feedback": "Trả lời đúng bản chất: khóa phức hợp được tạo thành từ nhiều field, gộp lại đảm bảo tính duy nhất và có thể đóng vai trò khóa chính. Chưa nói rõ về trường hợp dùng khi một cột không đủ xác định tính duy nhất (nice-to-have), không có ví dụ bảng trung gian nhiều-nhiều (optional).",
+          "score": 7.0
+        },
+        {
+          "row": 6,
+          "feedback": "Yêu cầu 1: subquery lọc nhân viên có COUNT(Skill_Code) > 1 đúng logic; tuy nhiên dùng select * thay vì chỉ Employee_Number, Employee_Name và thiếu DISTINCT. Yêu cầu 2: cú pháp create view sai hoàn toàn ('create or replace view as requirement2view (...)'), view không join Department nên thiếu Department_Name như yêu cầu. Cú pháp dư 'begin;' giữa có thể gây lỗi.",
+          "score": 4.0
+        },
+        {
+          "row": 7,
+          "feedback": "Cú pháp UPDATE SANPHAM SET GiaBan = GiaBan*2 đạt phần must-have. Nhưng điều kiện WHERE sai kiểu dữ liệu: MaLoaiSP là INT chứ không phải chuỗi, should WHERE MaLoaiSP = (id loại 'Type001') —代入 'Type001' trực tiếp cho cột INT sẽ lỗi hoặc sai kết quả; đúng công thức nhân 2 nhưng bảng tên lowercase không phải lỗi nghiêm trọng.",
+          "score": 6.5
+        },
+        {
+          "row": 8,
+          "feedback": "Xác định đúng khóa chính STUDENT (SSN), COURSE (Course#), BOOK (Book_ISBN#). Phân tích composite key tốt (optional đạt: chỉ ra ENROLL và BOOK_ADOPTION là khóa ghép). Sai sót: khóa chính ENROLL theo lược đồ là SSN+Course+Quarter (3 cột) nhưng SV chỉ lấy (ssn, course); khóa chính BOOK_ADOPTION là Course+Quarter+Book_ISBN nhưng SV chỉ lấy (course, book_isbn); khóa ngoại BOOK nên trỏ về BOOK_ADOPTION/Publisher chứ 'publisher, author' không phải khóa ngoại hợp lệ. Khóa ngoại ENROLL và BOOK_ADOPTION (nice) cơ bản đúng.",
+          "score": 6.5
+        },
+        {
+          "row": 9,
+          "feedback": "Câu SQL sai hoàn toàn về cú pháp: không dùng được hàm COUNT trong WHERE; trước tiên bài yêu cầu liệt kê Mã sản phẩm đã từng bán, đúng phải SELECT DISTINCT MaSP FROM BANHANG. Chỉ đạt phần đầu của must-have (đúng bảng), không dùng DISTINCT, điều kiện vô nghĩa.",
+          "score": 2.0
+        },
+        {
+          "row": 10,
+          "feedback": "Điều kiện WHERE sai cột: đề yêu cầu lọc theo chuyên ngành MAJOR (MAT/CSI) trong bảng EMP, SV lại lọc theo DEPTNO; SELECT * so với liệt kê thông tin nhân viên là chấp nhận được nhưng bảng dùng 'nhanvien' không đúng tên bảng EMP. V(use IN thay OR sẽ gọn hơn nhưng OR vẫn đúng logic A OR B). Chỉ đạt một phần must-have (đúng logic truy vấn nhân viên, sai điều kiện).",
+          "score": 4.0
+        },
+        {
+          "row": 11,
+          "feedback": "Kết nối được 4 bảng NhanVien, BanHang, SanPham, LoaiSP (must-have đạt) với chuỗi INNER JOIN đúng qua khóa ngoại. Nhưng sai hàm sum(banhang.masp) — yêu cầu là tổng số lượng (SUM(SoLuongDaBan)) hoặc đếm, không phải SUM mã sản phẩm; thiếu các cột yêu cầu (SoLuongDaBan, ...); GROUP BY banhang.manv thiếu nhóm các cột còn lại; thiếu alias rõ ràng. SanPham.TenSanPham không tồn tại (phải là TenSP).",
+          "score": 6.0
+        },
+        {
+          "row": 12,
+          "feedback": "Cú pháp hàm tạo sai hoàn toàn ('create or create procedure find'), không phải hàm có giá trị bảng (UDF). Logic điều kiện bị đảo ngược: where employeeid != emp_id — đề yêu cầu các dòng WorkDone của employee đó mà module do người khác làm; đúng của tham số nhưng sai hoàn toàn logic JOIN với ProjectModules theo EmployeeID ≠ tham số. Thiết thiếu điều kiện ModuleID liên kết với ProjectModules.",
+          "score": 1.5
+        },
+        {
+          "row": 13,
+          "feedback": "Trả lời đúng ý chính: table là cấu trúc dữ liệu hàng + cột; giải thích thêm ý nghĩa hàng là record/cột là đặc tính, kiểu dữ liệu của field nhất quán — tốt hơn mức must-have. Chưa nêu ví dụ cụ thể (nice) và chưa nói về mapping với 'entity' trong mô hình dữ liệu (optional).",
+          "score": 7.0
+        }
+      ],
+      "overall_comment": "BaoVN5 nắm được các khái niệm cơ bản (stored procedure, composite key, bảng) ở mức khá, nhưng phần coding SQL yếu: nhiều lỗi cú pháp nghiêm trọng (begin;/commit; trong SQL Server, create view sai, create or create procedure), dùng sai cột (DeptNo thay vì Major, SUM(MaSP) thay vì SUM(SoLuongDaBan)), sót DISTINCT và điều kiện lọc. Mọi truy vấn đều thiếu dấu nháy đơn quanh chuỗi. Cần rèn cú pháp chuẩn SQL Server và đọc kỹ yêu cầu đề trước khi viết.",
+      "raw_score": 63.0,
+      "total_score": 5.25,
+      "max_score": 120,
+      "percentage": 52.5,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "BaoVH4",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Câu trả lời chỉ gọi đúng tên 'Trigger' — chạm được một phần nhỏ của must-have (trigger là loại stored procedure đặc biệt tự thực thi khi có sự kiện). Chưa giải thích bản chất (tự động thực thi khi INSERT/UPDATE/DELETE diễn ra), mục đích (kiểm tra ràng buộc phức tạp, ghi log thay đổi) và chưa nêu các loại trigger BEFORE, AFTER, INSTEAD OF.",
+          "score": 2.0
+        },
+        {
+          "row": 3,
+          "feedback": "Câu trả lời sai bản chất: subquery không phải là 'truy vấn không cần dùng đến trigger, thể hiện độ phức tạp ít'. Định nghĩa đúng phải là: một câu SELECT lồng bên trong một câu truy vấn khác, có thể xuất hiện trong SELECT, FROM, WHERE, HAVING (nice). Câu trả lời gần như không đạt với rubric, cho điểm tối thiểu.",
+          "score": 1.0
+        },
+        {
+          "row": 4,
+          "feedback": "Không có câu trả lời.",
+          "score": 0.0
+        },
+        {
+          "row": 5,
+          "feedback": "Tạo được đủ 3 bảng đúng chủ đề, có khóa chính tự tăng và FK Don_Hang tham chiếu San_Pham/Khach_Hang là điểm cộng chính. Tuy nhiên còn nhiều lỗi: AutoIncrement không phải cú pháp SQL Server (phải là IDENTITY), Don_Hang khai báo FK cho cột Ma_SP/Ma_KH nhưng không hề định nghĩa 2 cột này trong bảng, Don_Gia Decimal(7,0) dễ tràn giá trị tiền, Phone_No dùng int sẽ mất số 0 đầu và giới hạn độ dài, chưa INSERT 1 bản ghi mỗi bảng (phần must-have chưa hoàn thành) và chưa có ràng buộc CHECK/CASCADE.",
+          "score": 5.0
+        },
+        {
+          "row": 6,
+          "feedback": "Câu trả lời đúng hướng rằng SQL dùng để truy vấn/thao tác dữ liệu nhưng chưa chạm must-have: chưa nói SQL là từ viết tắt của Structured Query Language, là ngôn ngữ tiêu chuẩn để tương tác với CSDL quan hệ. Chưa nêu các nhóm lệnh chính DQL/DML/DDL/DCL.",
+          "score": 3.0
+        },
+        {
+          "row": 7,
+          "feedback": "Không có câu trả lời.",
+          "score": 0.0
+        },
+        {
+          "row": 8,
+          "feedback": "Không có câu trả lời.",
+          "score": 0.0
+        },
+        {
+          "row": 9,
+          "feedback": "SELECT ActorName, Age FROM Actor WHERE age > 50 có bảng/cột và điều kiện đúng (nice đạt), nhưng đề yêu cầu SELECT * nên phần cột làm khác đi một chút. Cú pháp còn thiếu dấu chấm phẩy, chưa ORDER BY Age DESC (optional) nên xử lý chưa tối ưu.",
+          "score": 5.0
+        },
+        {
+          "row": 10,
+          "feedback": "Nhiều lỗi cú pháp nghiêm trọng: thiếu FROM (dùng trực tiếp 'where SanPham s Join ...' sai cấu trúc), 'GiaBan < 20.000' là literal không hợp lệ (phải là 20000), điều kiện SoLuongDaBan < 1 chưa xử lý đúng yêu cầu sản phẩm chưa bán — cần LEFT JOIN ... WHERE b.MaSP IS NULL hoặc NOT EXISTS. Logic nghiệp vụ chung chưa ghép đúng nên điểm rất thấp.",
+          "score": 2.0
+        },
+        {
+          "row": 11,
+          "feedback": "Đúng một số PK cơ bản: SSN (STUDENT), Course (COURSE), Book_ISBN (BOOK), nhưng sai còn lại: ENROLL phải có Composite PK gồm SSN+Course+Quarter, BOOK_ADOPTION phải có Composite PK (Course, Quarter, Book_ISBN) — câu trả lời chỉ coi Course là PK và Book_ISBN là FK, cấu trúc sai so với rubric. Chưa chỉ ra rõ Composite Key của ENROLL/BOOK_ADOPTION.",
+          "score": 2.0
+        },
+        {
+          "row": 12,
+          "feedback": "Không có câu trả lời.",
+          "score": 0.0
+        },
+        {
+          "row": 13,
+          "feedback": "Ý dùng 12 ký tự wildcard '____________' trong LIKE là tư duy đúng (mỗi dấu '_' thay cho 1 ký tự), nhưng phải đặt WHERE trước và số ký tự phải chính xác 12; chưa dùng hàm LEN(TenSP) = 12 như rubric hướng dẫn. Tên cột Ten_SP/TenSP chưa khớp tuyệt đối với đề (SANPHAM.TenSP).",
+          "score": 3.0
+        }
+      ],
+      "overall_comment": "BaoVH4 đạt tổng điểm 1.92/10. Ưu điểm: bài vẫn có một số ứng xử đúng ở mức khái niệm cơ bản (trigger, SQL) và một vài câu SELECT đơn giản gần đúng (row 9, 13). Điểm yếu rất rõ: 4 câu bỏ trống hoàn toàn (row 4, 7, 8, 12), nhiều câu Coding có sai cú pháp và sai từ khóa nghiêm trọng (thiếu FROM, dùng literal '20.000', AutoIncrement không tồn tại, FK khai báo cho cột không tồn tại trong bảng), và phần câu Conceptual trình bày quá ngắn, không chạm được nội dung must-have. Cần rèn lại cú pháp SQL cơ bản, tập kỹ tư duy thiết kế bảng/FK, và đặc biệt không bỏ trống câu hỏi.",
+      "raw_score": 23.0,
+      "total_score": 1.92,
+      "max_score": 120,
+      "percentage": 19.17,
+      "answered_count": 8,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "DatTC6",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Logic 2 tập hợp chưa đúng: truy vấn thứ nhất JOIN NHANVIEN-BANHANG rồi WHERE b.MaNhanVien IS NULL — cột MaNhanVien không tồn tại trong BANHANG (đúng phải MaNV), và sau INNER JOIN điều kiện IS NULL không bao giờ đúng, không liệt kê được NV chưa bán gì. Nhánh 2 sau UNION chỉ liệt kê toàn bộ NV đã bán (JOIN NHANVIEN-BANHANG), không lọc 'chỉ bán đúng sản phẩm Bột giặt OMO và không có sản phẩm khác'. Không kiểm tra tên sản phẩm nào cả. Gợi ý: tập 1 dùng NOT EXISTS (SELECT 1 FROM BANHANG b WHERE b.MaNV = n.MaNV); tập 2 dùng GROUP BY MaNV HAVING COUNT(DISTINCT MaSP) = 1 AND MAX(TenSP) = N'Bột giặt OMO'.",
+          "score": 2.0
+        },
+        {
+          "row": 3,
+          "feedback": "Chọn đúng bảng EMP và cột MAJOR, nhưng dùng AND cho 2 giá trị loại trừ nhau trên cùng 1 cột nên điều kiện luôn sai, không trả về kết quả nào. Đáp án đúng là WHERE MAJOR IN ('MAT','CSI') hoặc MAJOR = 'MAT' OR MAJOR = 'CSI'. Cần phân tích thêm edge case AND/OR theo rubric và dùng dấu nháy đơn thay vì nháy kép cho chuỗi ký tự.",
+          "score": 4
+        },
+        {
+          "row": 4,
+          "feedback": "Yêu cầu 1: ý dùng EXISTS đúng hướng nhưng viết sai — 'skill_num >= 2' gọi trực tiếp alias trong WHERE (không được phép, phải dùng HAVING COUNT(Skill_Code) >= 2 sau GROUP BY), SELECT của EXISTS thừa nhiều cột. Yêu cầu 2: CREATE VIEW DIFF_EMP_DASHBOARD AS ( ) — View rỗng, không có nội dung, không tham chiếu Department để lấy Department_Name như đề yêu cầu. Code không thể chạy.",
+          "score": 3.0
+        },
+        {
+          "row": 5,
+          "feedback": "Nắm được bản chất: HAVING đứng sau GROUP BY, lọc theo nhóm/kết quả hàm tổng hợp (MAX, SUM, MIN...); WHERE đứng trước GROUP BY, lọc từng bản ghi. Đủ ý must-have và đi đúng hướng nice-to-have. Thiếu: nói rõ WHERE không dùng được hàm tổng hợp, HAVING thì có; 'lọc theo bảng' nên diễn đạt là 'lọc theo nhóm'; lỗi đánh máy 'SUMB()' nên là SUM(); chưa có ví dụ minh họa cụ thể.",
+          "score": 7.0
+        },
+        {
+          "row": 6,
+          "feedback": "Cấu trúc bảng đúng: DeptNo khóa chính tự tăng (AUTO_INCREMENT), DeptName NOT NULL, Note cho phép NULL (không thêm ràng buộc NOT NULL) — đủ rubric must-have và nice-to-have. Tuy nhiên cú pháp sai nghiêm trọng: các định nghĩa cột trong CREATE TABLE phải phân cách bằng dấu phẩy, không phải dấu chấm phẩy (DeptNo INT AUTO_INCREMENT Primary key;) nên câu lệnh không chạy được. Thiếu dấu phẩy cuối khiến Note TEXT cũng sai cú pháp.",
+          "score": 6.5
+        },
+        {
+          "row": 7,
+          "feedback": "Không có câu trả lời thực chất, chỉ ghi 'Create Employee'. Chưa tạo bất kỳ bảng nào (Employee, Department, Skill, Emp_Skill), không có khóa chính, không áp dụng ràng buộc CHECK (Level 1-7, Status 0-2), DEFAULT, UNIQUE (Email) hay kiểu dữ liệu phù hợp, và hoàn toàn không có lệnh INSERT dữ liệu test.",
+          "score": 0.0
+        },
+        {
+          "row": 8,
+          "feedback": "Sai cả logic lẫn cú pháp: DELETE thiếu FROM (đúng: DELETE FROM NHANVIEN WHERE ...). Thiếu hoàn toàn điều kiện GioiTinh = N'Nữ'. QueQuan = '%Kom Tum' sai logic (ký tự % chỉ có tác dụng với LIKE), và sai chính tả 'Kom Tum' (đúng: Kon Tum). Không có ý nào trong rubric nice-to-have/optional được đáp ứng.",
+          "score": 2.0
+        },
+        {
+          "row": 9,
+          "feedback": "Truy vấn nối đúng đường 3 bảng LOAISP - SANPHAM - BANHANG qua khóa ngoại, select đúng 2 cột yêu cầu, logic 'loại sản phẩm đã từng được bán' chính xác. Tuy nhiên thiếu DISTINCT nên một loại SP được bán nhiều lần/nhiều sản phẩm sẽ bị lặp dòng. Nên thêm DISTINCT hoặc dùng EXISTS/IN từ bảng cha. Chưa giải thích lý do nên dùng EXISTS thay DISTINCT.",
+          "score": 7.0
+        },
+        {
+          "row": 10,
+          "feedback": "Trả lời đúng và đủ các ý quan trọng: dùng để định danh duy nhất từng bản ghi, không cho phép NULL, mỗi bảng chỉ có duy nhất 1 khóa chính, và ngầm hiểu có thể gồm 1 trường (đáp ứng chủ đề). Câu Easy trả tốt, chỉ còn thiếu phân biệt natural key vs surrogate key (optional) nên cộng 1 nhỏ.",
+          "score": 9.0
+        },
+        {
+          "row": 11,
+          "feedback": "Nắm được ý cơ bản: Trigger là tập lệnh chạy tự động khi điều kiện/sự kiện kích hoạt đã quy định khi tạo. Nhưng chưa nhấn mạnh là loại đặc biệt của Stored Procedure, chưa nêu rõ sự kiện конкретe (INSERT/UPDATE/DELETE trên bảng), chưa kể ứng dụng điển hình (kiểm tra ràng buộc phức tạp, ghi log/audit), và chưa liệt kê các loại trigger BEFORE/AFTER/INSTEAD OF — vốn là nice-to-have của câu Hard này.",
+          "score": 4.0
+        },
+        {
+          "row": 12,
+          "feedback": "Chỉ xóa bảng Projects, không xóa dữ liệu bảng con (WorkDone, ProjectModules) trước — nếu có khóa ngoại sẽ lỗi hoặc để rác dữ liệu; không in số lượng bản ghi bị xóa từ mỗi bảng (dùng ROW_COUNT()/@@ROWCOUNT) như đề yêu cầu bắt buộc. Điều kiện TIMESTAMPDIFF(Day, ProjectCompleteOn, NOW()) > 90 tương đương 'hoàn thành trên 3 tháng' — chấp nhận được về logic, nhưng có 1 nhóm: (1) tên cột sai (ProjectCompleteOn thiếu 'd', đúng ProjectCompletedOn); (2) thiếu dấu chấm phẩy giữa câu DELETE và END; (3) END; trong CREATE PROCEDURE MySQL không có ';' ngay sau END. Thiếu TRANSACTION/ON DELETE CASCADE (optional).",
+          "score": 4.0
+        },
+        {
+          "row": 13,
+          "feedback": "Customer: đúng PK CustId. Invoice: đúng CustId là FK, nhưng PK ghi 'InvoiceNo, Customer.CustId' là sai — Invoice chỉ có PK đơn InvoiceNo (CustId là FK, không phải PK). InvoiceItem: đúng ItemNo là FK nhưng thiếu FK InvoiceNo, và PK chỉ ghi LineNo — thực chất PK của InvoiceItem là composite (LineNo, InvoiceNo) theo rubric optional. Item: đúng PK ItemNo. Nắm được ý chính nhưng nhầm lẫn giữa PK và FK ở Invoice và bỏ sót FK ở InvoiceItem.",
+          "score": 5.5
+        }
+      ],
+      "overall_comment": "Trình độ trung bình – khá. Nền tảng lý thuyết ổn: câu 5 (WHERE/HAVING) và câu 10 (Primary Key) trả lời đúng đắn, trọn rubric. Nhưng phần Coding là điểm yếu rõ rệt: code nhiều câu không chạy được vì lỗi cú pháp cơ bản (CREATE TABLE dùng ';' thay ',' — câu 6, DELETE thiếu FROM — câu 8, alias trong WHERE — câu 4, tên cột chép sai — câu 12), logic AND/OR nhầm bản chất (câu 3), và câu 7 bỏ trắng để mất 8 điểm. Cần cẩn thận hơn khi viết code: rà soát lại dấu câu, tên cột, và tự chạy thử câu lệnh trước khi nộp.",
+      "raw_score": 54.0,
+      "total_score": 4.5,
+      "max_score": 120,
+      "percentage": 45.0,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "DuongTD9",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "ID: NChar(7) và Name: NChar(50) sai bản chất — ID cần INT (số tự tăng), Name cần VARCHAR (chuỗi tiếng Anh). Chỉ Code: NChar(5) và ModifiedDate: Date là hợp lý. Không giải thích vì sao CHAR(5) tiết kiệm overhead hơn VARCHAR(5), cũng không nêu lý do INT đủ chứa < 1 triệu bản ghi.",
+          "score": 4.0
+        },
+        {
+          "row": 3,
+          "feedback": "Hàm có tên Emp_Tracking đúng, truy vấn Salary với điều kiện Status = 0 đúng,phong cách phong cách đúng hướng. Tham số @EmpNo bị cắt mất kiểu dữ liệu ('@EmpNo' thiếu 'int'), thiếu RETURNS money và BEGIN...END — hàm như viết sẽ không chạy được. Không xử lý NULL cho nhân viên không tồn tại/nghỉ việc.",
+          "score": 6.0
+        },
+        {
+          "row": 4,
+          "feedback": "Định nghĩa đúng: khóa phức hợp là khóa gồm nhiều hơn 1 trường, có Ví dụ MaNV + MaDA. Chưa nêu rõ mục đích (khi 1 cột không đủ đảm bảo tính duy nhất), ví dụ nêu ngắn chưa chỉ rõ đây là bảng trung gian quan hệ nhiều-nhiều.",
+          "score": 8.0
+        },
+        {
+          "row": 5,
+          "feedback": "Cấu trúc 2 bảng tạo được nhưng sai: EMP_SKILL khai báo 'primary key' riêng lẻ trên cả SkillNo và EmpNo (không đúng PK kép (SkillNo, EmpNo)); thiếu FK tới SKILL và EMPLOYEE; thiếu CHECK SkillLevel; SQL Server không có 'auto increment' (phải dùng IDENTITY); có dấu phẩy thừa trước ngoặc đóng bảng EMP_SKILL. Có chèn 1 bản ghi mỗi bảng (điểm must đạt được phần chèn). Không có ON DELETE CASCADE.",
+          "score": 5.0
+        },
+        {
+          "row": 6,
+          "feedback": "Kết nối đủ 4 bảng NHANVIEN–BANHANG–SANPHAM–LOAISP đúng qua các khóa ngoại, select đủ các cột yêu cầu (must đạt). Tuy nhiên 'HoTen' sai tên cột (đề là HoTenNV), thiếu DISTINCT nếu BANHANG có nhiều dòng nhân viên–sản phẩm, không có ORDER BY theo Mã/Tên NV, không dùng alias rõ ràng cho các cột trùng tên.",
+          "score": 7.0
+        },
+        {
+          "row": 7,
+          "feedback": "Đúng bản chất: alias là tên thay thế tạm cho cột/bảng phục vụ mục đích truy vấn. Có nhắc dùng được cho cả cột lẫn bảng (hữu ích khi JOIN). Não dùng từ khóa AS và ví dụ cụ thể ⇒ thiếu nice; chưa nhấn mạnh lợi ích trong JOIN phức tạp.",
+          "score": 9.0
+        },
+        {
+          "row": 8,
+          "feedback": "Trả lời chỉ có cụm 'Create Trigger' — không có cấu trúc trigger ràng buộc nào khác (không tên, không bảng Employee, không kiểm tra INSERTED, không ROLLBACK). Không đáp ứng yêu cầu trình bày đề.",
+          "score": 0.0
+        },
+        {
+          "row": 9,
+          "feedback": "Select từ LOAISP và join đúng về dữ liệu bán hàng qua SANPHAM, BANHANG. Nhưng người thiếu DISTINCT nên kết quả lặp loại sản phẩm khi có nhiều giao bán; chưa so sánh ưu điểm EXISTS/IN với DISTINCT khi chỉ cần dữ liệu bảng cha.",
+          "score": 6.0
+        },
+        {
+          "row": 10,
+          "feedback": "Chỉ viết 'Select EmpName, From EMPLOYEE' cú pháp sai (dấu phẩy treo), không hề thực hiện Self-Join bảng Employee để nối MgrNo với EmpNo của quản lý, không lấy tên manager. Về cơ bản Không đáp ứng đề.",
+          "score": 1.0
+        },
+        {
+          "row": 11,
+          "feedback": "Đúng bản chất trigger tự động thực thi khi có sự kiện xảy ra; ví dụ xóa nhân viên khi xóa phòng ban minh họa được nghiệp vụ. Chưa nêu rõ trigger là một loại Stored Procedure đặc biệt, chưa liệt kê cụ thể các sự kiện INSERT/UPDATE/DELETE, chưa nhắc ghi log/kiểm tra ràng buộc (must-have còn thiếu); chưa nêu các loại trigger BEFORE/AFTER/INSTEAD OF (nice-to-have) và rủi ro (optional).",
+          "score": 5
+        },
+        {
+          "row": 12,
+          "feedback": "Cú pháp ALTER TABLE sai (không ALTER TABLE ADD Email), ràng buộc CHECK(Email Not exists) vô nghĩa, không dùng UNIQUE nên không đảm bảo giá trị Email không trùng lặp. Không đáp ứng yêu cầu đề.",
+          "score": 0.0
+        },
+        {
+          "row": 13,
+          "feedback": "Select từ NHANVIEN, lọc điều kiện tuổi bằng WHERE Tuoi>=25 AND Tuoi<=35 đúng (nice). Thiếu BETWEEN — nicer viết gọn hơn nhưng cách dùng AND-kiểu cũng đúng. Không giải thích ranh giới BETWEEN tính cả 2 đầu mút và tối ưu index.",
+          "score": 9.0
+        }
+      ],
+      "overall_comment": "Nhận xét: Học viên nắm tốt các khái niệm lý thuyết cơ bản (Composite Key, Alias, Trigger — câu 4, 7, 11 đạt điểm cao) và câu truy vấn JOIN đơn giản (câu 6, 9, 13). Tuy nhiên phần coding T-SQL còn yếu rõ rệt: cú pháp créate Function/Trigger/ALTER TABLE chưa chuẩn (câu 3, 8, 10, 12), thiếu các ràng buộc FK/PK kép/CHECK khi thiết kế bảng (câu 5), và kiểu dữ liệu tối ưu chưa đúng mục tiêu đề (câu 2). Nên tập trung luyện cú pháp T-SQL cụ thể (UDF scalar, trigger INSERTED/ROLLBACK, ALTER TABLE ADD, IDENTITY/UNIQUE) trước khi thi lại.",
+      "raw_score": 60.0,
+      "total_score": 5.0,
+      "max_score": 120,
+      "percentage": 50.0,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "HaPN16",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Trả lời chạm được 1 phần ý rubric chính (giá trị rỗng, không chứa dữ liệu) nhưng chưa đúng bản chất theo rubric: NULL trong SQL là giá trị đặc biệt biểu thị dữ liệu KHÔNG tồn tại / KHÔNG xác định / KHÔNG áp dụng. Lời giải còn khẳng định sai rằng NULL khi trả về bằng chuỗi rỗng \"\" — thực tế NULL khác hoàn toàn với chuỗi '' cũng như số 0, và không thể dùng = để so sánh với NULL. Không nhắc IS NULL / IS NOT NULL.",
+          "score": 4
+        },
+        {
+          "row": 3,
+          "feedback": "Câu trả lời đúng và đủ: SELECT * FROM NHANVIEN liệt kê toàn bộ nhân viên (tất cả các cột), cú pháp chuẩn, không lỗi. Nên tốt hơn bằng cách liệt kê danh sách cột cụ thể thay SELECT * (best practice), nhưng theo rubric câu này không bắt buộc nên vẫn đạt điểm tối đa mức must-have + nice-to-have.",
+          "score": 10
+        },
+        {
+          "row": 4,
+          "feedback": "Sử dụng đúng kỹ thuật sub-query trong mệnh đề WHERE như yêu cầu: truy vấn con GROUP BY EmpNo ... HAVING COUNT > 1 để lọc nhân viên có nhiều hơn 1 kỹ năng, truy vấn ngoài select đúng 3 cột EmpName, Email, BirthDay — đạt mục tiêu chính của rubric. Điểm trừ: thiếu điều kiện Status = 0 ('đang làm việc') nên có thể trả cả nhân viên đã nghỉ việc; không dùng DISTINCT nhưng do dùng IN nên kết quả cuối vẫn không trùng lặp (chấp nhận được); JOIN thêm bảng SKILL là thừa; không so sánh hiệu năng giữa Subquery và CTE/Window Function như phần bonus gợi ý.",
+          "score": 8
+        },
+        {
+          "row": 5,
+          "feedback": "Rất tốt: nối đúng và đủ 4 bảng NHANVIEN, BANHANG, SANPHAM, LOAISP bằng INNER JOIN đúng khóa ngoại, chọn đủ các cột theo yêu cầu, dùng alias ngắn gọn (NV, SP, LSP, BH) giúp câu lệnh dễ đọc, xử lý các cột trùng tên rõ ràng. Bước này đáp ứng đầy đủ rubric chính và nice-to-have.",
+          "score": 10
+        },
+        {
+          "row": 6,
+          "feedback": "Truy vấn đúng hướng, đáp ứng rubric chính: select từ LOAISP và kết nối dữ liệu bán hàng qua SANPHAM/BANHANG, logic lọc loại sản phẩm 'đã từng được bán' đúng. Điểm trừ: không có DISTINCT nên loại sản phẩm bán nhiều lần bị lặp dòng — không đạt phần nice-to-have; không dùng hướng EXISTS/IN cũng như không giải thích như gợi ý trong bonus optional.",
+          "score": 8
+        },
+        {
+          "row": 7,
+          "feedback": "Có một số ý chính nhưng chưa đủ và khá mơ hồ: định nghĩa Stored Procedure nói 'đã được thực thi' là sai (SP được lưu trữ, chỉ thực thi khi được GỌI tường minh bởi người dùng/ứng dụng — đây là ý rubric chính), phần nhắc về tham số của SP là tốt. Về Trigger, câu 'là câu lệnh SQL kích hoạt câu lệnh đã viết trong Database' không nói rõ đặc trưng cốt lõi: Trigger được thực thi TỰ ĐỘNG khi có sự kiện DML (INSERT/UPDATE/DELETE) xảy ra trên bảng. Thiếu sự đối chiếu trực tiếp giữa 2 khái niệm như rubric yêu cầu.",
+          "score": 5
+        },
+        {
+          "row": 8,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 9,
+          "feedback": "Cú pháp hàm sai nghiêm trọng: CREATE FUNCTION với tham số viết kiểu 'AS EmpNo' (cú pháp không tồn tại, đúng phải là (@EmpNo INT)), thiếu RETURNS money, thiếu RETURN (SELECT ...), thiếu BEGIN...END. Logic nghiệp vụ sai: truy vấn chỉ lọc Status = 0 mà KHÔNG lọc theo tham số EmpNo (thiếu WHERE EmpNo = @EmpNo), nên hàm sẽ trả về Salary của mọi nhân viên đang làm việc thay vì của 1 nhân viên cụ thể như rubric yêu cầu ('EmpNo khớp AND Status = 0'). Về cơ bản có ý tạo hàm trên bảng Employee và chọn cột Salary nên không được 0 điểm.",
+          "score": 3
+        },
+        {
+          "row": 10,
+          "feedback": "Tạo đủ 3 bảng với các cột tương ứng, có khóa chính, chọn kiểu dữ liệu hợp lý (MONEY cho Don_Gia, INT cho So_Luong, DATE cho Ngay_DH, VARCHAR cho mã), và đặc biệt tốt: xác định đúng cả 2 khóa ngoại trong Don_Hang bằng CONSTRAINT ... FOREIGN KEY REFERENCES. Chèn đủ 1 bản ghi mỗi bảng. Trừ nhỏ: câu INSERT vào Khach_Hang viết 'VALUES' hai lần liên tiếp (VALUES('KH001', ...)) sẽ gây lỗi cú pháp khi chạy. Không áp dụng CHECK (So_Luong > 0, Don_Gia > 0) hay ON DELETE CASCADE như gợi ý phần bonus.",
+          "score": 9
+        },
+        {
+          "row": 11,
+          "feedback": "Nhận diện được hầu hết khóa chính và khóa ngoại đúng ở mức cơ bản: STUDENT PK là SSN, COURSE PK là Course, ENROLL có PK/FK là SSN + Course, BOOK PK là Book_ISBN, BOOK_ADOPTION có PK/FK là Book_ISBN + Course. Điểm trừ: việc trình bày gộp chung 'PK, FK: ...' không tách bạch rõ thuộc tính nào là PK, thuộc tính nào là FK cho các bảng ENROLL và BOOK_ADOPTION; thiếu mất bảng COURSE (được ghi nhưng gộp figurative); quan trọng hơn, không chỉ ra được tên cột mang dấu '#' chính xác như Quarter trong ENROLL (PK thực tế là SSN + Course# + Quarter) và BOOK_ADOPTION (Course# + Quarter + Book_ISBN#) theo rubric; không nhắc khái niệm Composite Key như phần bonus.",
+          "score": 6
+        },
+        {
+          "row": 12,
+          "feedback": "Trả lời đúng và gọn: SELECT * FROM Actor với mệnh đề WHERE Age > 50, đúng ngữ nghĩa 'lớn hơn 50' (không tính cả 50), cú pháp chuẩn, có dấu kết thúc câu. Không thêm ORDER BY Age DESC như gợi ý ở phần điểm cộng thêm nên không có bonus, nhưng nội dung chính đạt đầy đủ rubric.",
+          "score": 10
+        },
+        {
+          "row": 13,
+          "feedback": "Trả lời đúng và đầy đủ ý chính rubric: PRIMARY KEY — không được phép NULL, mỗi bảng chỉ có duy nhất 1; UNIQUE — không trùng nhau và có thể chứa NULL. Có làm thêm rõ UNIQUE áp dụng cho từng cột, cách diễn đạt rõ ràng, dễ hiểu. Thiếu nét phụ như ý rằng cả hai đều đảm bảo tính duy nhất trong cột là đã ngầm thể hiện; thiếu điểm bonus về index tự động sinh cho cả hai ràng buộc, nhưng phần chính đã đủ tốt.",
+          "score": 8
+        }
+      ],
+      "overall_comment": "Bài làm khá tốt ở nhóm SQL truy vấn cơ bản: JOIN nhiều bảng, SELECT, WHERE, BETWEEN đều viết chuẩn và đạt tối đa thang điểm ở vài câu. Điểm yếu nằm ở phần khái niệm NULL và các cấu trúc lập trình CSDL (Function, Stored Procedure vs Trigger) còn chủ quan và chưa chạm được ý cốt lõi của rubric; một câu Coding để trống, một câu viết cú pháp Function sai nghiêm trọng và thiếu điều kiện theo tham số. Các câu trả lời được viết bằng tiếng Việt rõ ràng, có tổ chức.",
+      "raw_score": 81.0,
+      "total_score": 6.75,
+      "max_score": 120,
+      "percentage": 67.5,
+      "answered_count": 11,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "HoangNQ26",
+      "rows": [
+        {
+          "row": 2,
+          "score": 10,
+          "feedback": "Tạo bảng SKILL đúng cấu trúc: SkillNo GENERATED ALWAYS AS IDENTITY PRIMARY KEY (khóa chính + tự động tăng), SkillName NOT NULL, Note không NOT NULL. Đáp ứng đủ must-have và nice-to-have; chỉ thiếu UNIQUE cho SkillName (optional)."
+        },
+        {
+          "row": 3,
+          "score": 6,
+          "feedback": "Nêu được ý cốt lõi: DISTINCT dùng để loại bỏ dữ liệu trùng lặp, chỉ trả về giá trị duy nhất. Tuy nhiên trả lời bằng tiếng Anh, ngắn và chưa nhấn mạnh đây là từ khóa của câu lệnh SELECT; thiếu ví dụ minh họa (SELECT DISTINCT ThanhPho FROM KhachHang)."
+        },
+        {
+          "row": 4,
+          "score": 10,
+          "feedback": "Truy vấn hoàn chỉnh và đúng: Select đúng 3 cột (EmpName, Email, SkillNo), JOIN EMPLOYEE với EMP_SKILL qua khóa đúng (es.EmpNo = e.EmpNo), ORDER BY e.EmpName (mặc định ASC), dùng alias gọn gàng."
+        },
+        {
+          "row": 5,
+          "score": 5,
+          "feedback": "Nhận diện được 2 tập hợp cần tìm và dùng NOT EXISTS/EXISTS đúng tinh thần, nhưng tập hợp thứ 2 sai: JOIN viết bh.MaSP = bh.MaSP (so sánh cột với chính nó, thực chất là cross join) thay vì sp.MaSP = bh.MaSP, và chỉ kiểm tra 'có bán OMO' mà không loại trừ việc nhân viên đó bán thêm sản phẩm khác (thiếu điều kiện NOT EXISTS sản phẩm khác). Kết quả trả về sai so với yêu cầu 'chỉ bán duy nhất OMO'. Chưa GROUP BY/HAVING, chưa UNION 2 tập hợp."
+        },
+        {
+          "row": 6,
+          "score": 5,
+          "feedback": "Đi đúng hướng viết Trigger (trigger function + CREATE TRIGGER BEFORE INSERT trên ProjectModules) nhưng nhiều lỗi cú pháp: thiếu THEN sau mỗi IF, cụm 'RETURN NEW IF' sai, CREATE TRIGGER dùng EXEC thay vì EXECUTE FUNCTION. Logic điều kiện bị đảo ngược: kiểm tra ProjectModulesDate >= ProjectStartDate và ProjectModulesCompletedOn <= ProjectCompletedOn khi đúng ra phải chặn trường hợp date sớm hơn start (NEW.X < ...) và completed muộn hơn (NEW.Y > ...). Chỉ xử lý INSERT, chưa covering cả UPDATE như đề yêu cầu. Trigger phải tự nhiên hiểu và nắm logic chặn vi phạm là điểm cộng."
+        },
+        {
+          "row": 7,
+          "score": 7,
+          "feedback": "Tạo đủ 4 bảng (Department, Skill, Employee, Emp_Skill) với PK, FK, CHECK (Level, Status), DEFAULT Status, UNIQUE Email; chèn đủ 1 bản ghi mỗi bảng. Trừ điểm: INSERT vào Employee dùng Status = 9 (mời xác nhận) vi phạm chính ràng buộc CHECK(Status in (0,1,2)) vừa khai báo — bản ghi này sẽ lỗi khi chạy; dùng cột tên 'Level' là từ khóa dễ gây lỗi cú pháp trên SQL Server; không có ON DELETE/ON UPDATE cho FK."
+        },
+        {
+          "row": 8,
+          "score": 10,
+          "feedback": "Phân biệt đúng bản chất: Stored Procedure được gọi tường minh (EXEC/CALL), có thể truyền tham số, không dùng được trực tiếp trong query; Trigger gắn với bảng cụ thể, tự động kích hoạt qua BEFORE/AFTER khi có sự kiện, không gọi trực tiếp được. Đủ must-have và nice-to-have."
+        },
+        {
+          "row": 9,
+          "score": 4,
+          "feedback": "Có dùng Status = 0 và EXISTS với GROUP BY/HAVING (đặt subquery đúng chỗ), nhưng sai điều kiện>=1 nghĩa là 'có ít nhất 1 kỹ năng' trong khi đề yêu cầu 'nhiều hơn 1' (phải là HAVING COUNT(DISTINCT SkillNo) > 1). Sai tên cột: EmpBirthDay không tồn tại (đúng là BirthDay), và dùng bảng NHANVIEN thay vì EMPLOYEE. Kết quả trả về sai cả tập hợp lọc lẫn tên cột."
+        },
+        {
+          "row": 10,
+          "score": 10,
+          "feedback": "Truy vấn đúng và gọn: SELECT từ SANPHAM, INNER JOIN LOAISP qua khóa đúng (sp.MaLoaiSP = lsp.MaLoaiSP), WHERE lsp.TenLoaiSP = 'My pham'. Đáp ứng đủ must-have và nice-to-have."
+        },
+        {
+          "row": 11,
+          "score": 9,
+          "feedback": "Xác định đúng toàn bộ khóa chính của 7 bảng và nhận diện phần PK không tồn tại ở bảng PUBLISHER/AUTHOR. Điểm tốt: nhận diện PK composite (PK, FK) của BOOK_AUTHOR, BOOK_CATEGORY. Điểm trừ: bỏ sót khóa ngoại của bảng BOOK_TITLE (PublisherID và BookFormat) mà rubric liệt kê rõ; chưa nêu tường minh quan hệ N:N ở 2 bảng trung gian."
+        },
+        {
+          "row": 12,
+          "score": 8,
+          "feedback": "Giải thích trực quan về Index là cấu trúc dữ liệu giúp tra cứu nhanh (so sánh như mục lục sách) và cảnh báo không lạm dụng trên bảng nhỏ, dữ liệu thay đổi nhiều — đạt một phần phải (must). Điểm trừ: chưa nêu nên index các cột thường dùng trong WHERE/JOIN (ý bắt buộc còn lại của must); chưa phân biệt loại index (B-Tree, clustered/non-clustered)."
+        },
+        {
+          "row": 13,
+          "score": 10,
+          "feedback": "Đáp án chuẩn: SELECT * FROM NHANVIEN WHERE Tuoi BETWEEN 25 AND 35 — đúng cú pháp, đúng điều kiện lọc khoảng 25–35 (tính cả 2 đầu mút)."
+        }
+      ],
+      "overall_comment": "Bài làm khá và thể hiện hiểu tốt ở các câu lý thuyết: khái niệm DISTINCT, Stored Procedure vs Trigger, Index đều nêu đúng bản chất cốt lõi. Các truy vấn đơn giản (JOIN 2-3 bảng, BETWEEN, DDL tạo bảng) làm chuẩn và gọn gàng. Điểm yếu tập trung ở các bài khó: logic điều kiện so sánh bị đảo (trigger chặn ngày), ngưỡng 'nhiều hơn 1' lại viết >= 1, tập hợp 'chỉ bán OMO' thiếu điều kiện loại trừ sản phẩm khác, JOIN so sánh cột với chính nó, và có lỗi dữ liệu test vi phạm chính ràng buộc (Status = 9). Nên soát kỹ toán tử so sánh và chạy thử code trước khi nộp.",
+      "raw_score": 94.0,
+      "total_score": 7.83,
+      "max_score": 120,
+      "percentage": 78.33,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "HuyenNTK43",
+      "rows": [
+        {
+          "row": 2,
+          "score": 5,
+          "feedback": "Có tạo bảng Actor, đặt PRIMARY KEY (ActorName) và chọn đúng kiểu INT cho tuổi. Tuy nhiên: AverageMovieSalary là tiền lại dùng VARCHAR (phải là DECIMAL/NUMERIC); yêu cầu 'tất cả các trường đều bắt buộc' nhưng không thêm NOT NULL cho các cột còn lại; có dấu phẩy thừa trước dấu đóng ngoặc gây lỗi cú pháp; chưa dùng cột ID tự tăng làm khóa chính."
+        },
+        {
+          "row": 3,
+          "score": 1,
+          "feedback": "Truy vấn không đạt: so sánh 'bh.soluongdaban= Null' sai (phải dùng IS NULL, và nhân viên không bán gì vốn không xuất hiện khi INNER JOIN BANHANG nên logic sai từ gốc); so sánh bh.masp với 'Bot giat OMO' là nhầm mã sản phẩm với tên sản phẩm; thiếu điều kiện 'chỉ bán OMO duy nhất'; 'groupby' sai cú pháp. Chỉ có ý tưởng JOIN bảng."
+        },
+        {
+          "row": 4,
+          "score": 2,
+          "feedback": "Chỉ JOIN được Employee_Table với Employee_Skill_Table; không dùng SUB-QUERY, không lọc nhân viên có nhiều kỹ năng (COUNT(Skill_Code) > 1) và không tạo View theo Yêu cầu 2. Kết quả vẫn liệt kê từng Skill_Code thay vì danh sách nhân viên distinct."
+        },
+        {
+          "row": 5,
+          "score": 6,
+          "feedback": "Xác định đúng khóa chính của 6 trong 7 bảng: BOOK_TITLE (ISBN_Number), BOOK_FORMAT (BookFormat), CATEGORY (CategoryID), PUBLISHER (PublisherID), AUTHOR (AuthorID) và nhận diện đúng các bảng trung gian BOOK_AUTHOR/BOOK_CATEGORY (chạm được điểm optional về quan hệ N:N). Chỉ ra đúng FK PublisherID, BookFormat trong BOOK_TITLE — đạt nice-to-have, dù chưa phân biệt tường minh PK và FK ở 2 bảng trung gian. Điểm trừ: chưa nêu khóa chính (kép) của BOOK_AUTHOR (ISBN_Number + AuthorID) và BOOK_CATEGORY (ISBN_Number + CategoryID) nên chưa đạt trọn vẹn ý bắt buộc; chưa nhắc công khai quan hệ N:N."
+        },
+        {
+          "row": 6,
+          "score": 0,
+          "feedback": "Yêu cầu là Stored Procedure có tham số @EmployeeID nhưng chỉ viết một truy vấn SELECT thường, không có tham số, không lọc theo EmployeeID, không có CREATE PROCEDURE. Không đáp ứng yếu tố bắt buộc nào."
+        },
+        {
+          "row": 7,
+          "score": 0,
+          "feedback": "Câu trả lời sai bản chất và khó hiểu: Stored Procedure là tập lệnh được lưu trong CSDL, được gọi tường minh bằng EXEC/CALL; Trigger tự động kích hoạt khi có sự kiện DML (INSERT/UPDATE/DELETE). Đáp án không thể hiện được sự khác biệt cốt lõi, không đạt ý bắt buộc."
+        },
+        {
+          "row": 8,
+          "score": 4,
+          "feedback": "Có SELECT HoTenNV từ NHANVIEN (đủ ý bắt buộc cơ bản), nhưng dùng GROUP BY MaNV, HoTenNV thì mỗi nhân viên vẫn hiện 1 dòng riêng nên tên trùng nhau chưa được gộp còn thiếu mã NV làm sai lệch ý 'chỉ hiển thị tên 1 lần'; nên dùng SELECT DISTINCT HoTenNV."
+        },
+        {
+          "row": 9,
+          "score": 3,
+          "feedback": "Đại ý đúng (tự sinh số thứ tự cho từng dòng) nhưng quá sơ sài: chưa nói đây là thuộc tính của cột dùng cho khóa chính, chưa nhắc IDENTITY (SQL Server) / AUTO_INCREMENT (MySQL)."
+        },
+        {
+          "row": 10,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        },
+        {
+          "row": 11,
+          "score": 2,
+          "feedback": "Chỉ nói rất ngắn 'ô giá trị đó đang trống' — chưa đúng bản chất NULL là 'dữ liệu không tồn tại, không xác định', chưa phân biệt NULL với số 0 hay chuỗi rỗng ('')."
+        },
+        {
+          "row": 12,
+          "score": 1,
+          "feedback": "Không tạo được UDF, không có tham số EmployeeID, không JOIN với ProjectModules để kiểm tra 'công việc không phải do họ làm' (ProjectModules.EmployeeID <> @EmployeeID). Chỉ SELECT vô tượng vài cột từ WorkDone, không đáp ứng logic yêu cầu."
+        },
+        {
+          "row": 13,
+          "score": 1,
+          "feedback": "Truy vấn sai hẳn: truy vấn từ NHANVIEN nhưng chọn masp, tensp (cột không tồn tại); cần truy vấn BANHANG/SANPHAM; điều kiện 'Not Null' sai cú pháp (phải là IS NOT NULL) và thực chất NOT EXISTS/JOIN với BANHANG mới là cách đúng; thiếu DISTINCT. Không chạy được."
+        }
+      ],
+      "overall_comment": "Bài làm của HuyenNTK43 ở mức yếu: các câu trả lời thường quá ngắn, nhiều lỗ hổng kiến thức cơ bản. Điểm tích cực duy nhất là câu phân biệt PK/FK (hàng 5) gần như đúng hoàn toàn; các câu conceptual khác khá sơ sài. Các yêu cầu cần Stored Procedure, UDF, SUB-QUERY, VIEW (hàng 3, 4, 6, 10, 12) hầu như không đáp ứng — hoặc bỏ trống, hoặc viết sai bản chất. Cú pháp SQL yếu: so sánh '= NULL' và 'Not Null' sai, tham chiếu cột không tồn tại, 'groupby' viết liền, dấu phẩy thừa. Cần ôn lại IS NULL / IS NOT NULL, DISTINCT, các đối tượng VIEW/FUNCTION/PROCEDURE và tránh để trống câu hỏi.",
+      "raw_score": 25.0,
+      "total_score": 2.08,
+      "max_score": 120,
+      "percentage": 20.83,
+      "answered_count": 11,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "KhanhHQ15",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 3,
+          "feedback": "Có hướng đúng với DELETE FROM NHANVIEN kèm 2 điều kiện trong WHERE (GioiTinh và QueQuan), tuy nhiên câu lệnh thừa mệnh đề 'on delete casade' (không hợp lệ trong DELETE này) khiến cú pháp sai không chạy được; giá trị điều kiện cũng gõ sai 'Kon Tom'. Không dùng N'' cho chuỗi tiếng Việt.",
+          "score": 5
+        },
+        {
+          "row": 4,
+          "feedback": "Tạo đúng cấu trúc 2 bảng SKILL và EMP_SKILL với PK kép (SkillNo, EmpNo) và Foreign Key tham chiếu đúng; chèn được 1 bản ghi vào SKILL nhưng lệnh INSERT vào EMP_SKILL bị sai cú pháp (từ khóa 'table' thừa và mệnh đề VALUES bị tách ra thành câu lệnh riêng) nên không thể chèn bản ghi test. Thiếu CHECK cho SkillLevel; Description đặt NOT NULL trong khi rubric cho phép NULL.",
+          "score": 7
+        },
+        {
+          "row": 5,
+          "feedback": "Đáp án đúng và ngắn gọn: dùng WHERE HoTenNV LIKE '% Hoa' để lọc tên là từ cuối cùng. Đáp ứng đủ phần bắt buộc và nice-to-have; không xử lý khoảng trắng thừa nên chưa đạt điểm cộng.",
+          "score": 9
+        },
+        {
+          "row": 6,
+          "feedback": "Trả lời đúng bản chất: Stored Procedure là tập lệnh được lưu trong DB, người dùng chủ động gọi bằng tên với mục đích che giấu logic; Trigger tự động kích hoạt khi có sự kiện thay đổi dữ liệu (insert/update/delete) trên bảng. Đủ ý bắt buộc; chưa nêu SP có thể nhận tham số và Trigger thì không.",
+          "score": 8
+        },
+        {
+          "row": 7,
+          "feedback": "Cung cấp đủ 2 giải pháp theo yêu cầu: dùng JOIN với điều kiện Skill_Code = 'Java' và dùng Sub-query dạng EXISTS có tương quan — cả hai đều đúng cú pháp và logic. Chưa phân tích ưu/nhược điểm của 2 cách (EXISTS tối ưu hơn với dữ liệu lớn, tránh duplicate) nên thiếu điểm cộng; cũng nên SELECT các cột cụ thể thay vì SELECT *.",
+          "score": 9
+        },
+        {
+          "row": 8,
+          "feedback": "Trả lời tốt: chỉ rõ điểm giống (đều là toán tử so sánh trên chuỗi) và khác biệt cốt lõi — '=' so sánh bằng chính xác, LIKE cho phép dùng wildcard (% _) tạo điều kiện theo mẫu. Đủ ý bắt buộc; chưa nêu hiệu năng LIKE chậm hơn '='.",
+          "score": 8
+        },
+        {
+          "row": 9,
+          "feedback": "Câu lệnh ALTER TABLE ... ADD COLUMN ImageLink VARCHAR(200) NOT NULL UNIQUE đúng cú pháp và đáp ứng đầy đủ: thêm trường mới, ràng buộc UNIQUE đảm bảo không trùng lặp, cộng thêm NOT NULL (điểm cộng trong rubric). Điểm tối đa.",
+          "score": 10
+        },
+        {
+          "row": 10,
+          "feedback": "Hiểu khái niệm relationship là sự liên kết giữa các entity, nhưng chỉ đếm 3 loại (1-1, 1-N, N-M) trong khi rubric yêu cầu 4 loại (1-1, 1-nhiều, nhiều-1, nhiều-nhiều). Không đưa ví dụ minh họa cho từng loại.",
+          "score": 6
+        },
+        {
+          "row": 11,
+          "feedback": "Có ý dùng CTE và LEFT JOIN BANHANG để tính tổng số đã bán, nhưng truy vấn bị hỏng: CTE đặt tên 's' mà mệnh đề cuối lại SELECT * FROM 't' (tên không tồn tại), GROUP BY thiếu nv.HoTenNV, dùng SUM(SoLuongDaBan) thay vì đếm số loại sản phẩm bán, và chưa xử lý điều kiện 'chỉ bán đúng Bột giặt OMO'. Chưa thể trả về đúng 2 tập hợp yêu cầu.",
+          "score": 2
+        },
+        {
+          "row": 12,
+          "feedback": "Tối ưu một phần đúng: Code dùng CHAR(5) cố định và ModifiedDate dùng TIMESTAMP. Tuy nhiên bỏ sót hoàn toàn cột Name (yêu cầu một trong 4 cột), thiếu cột Name VARCHAR; tên bảng đặt là 'Code' dù bài không yêu cầu tạo bảng; chưa giải thích lý do chọn CHAR(5) thay VARCHAR(5) và chưa lý giải INT thay BIGINT.",
+          "score": 4
+        },
+        {
+          "row": 13,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        }
+      ],
+      "overall_comment": "Bài làm của KhanhHQ15 ở mức trung bình. Ưu điểm nổi bật là nhóm câu truy vấn cơ bản: xử lý LIKE với tên 'Hoa', hai giải pháp JOIN/EXISTS cho câu khó, hiểu đúng LIKE vs '=' và ALTER TABLE UNIQUE rất chuẩn; khái niệm Stored Procedure vs Trigger cũng nắm ổn. Điểm trừ tập trung ở các câu khó về cấu trúc: câu truy vấn SQL nhân viên chưa bán hàng/OMO bị sai logic và hỏng syntax, câu tạo bảng có cú pháp INSERT sai, hai câu trả lời để trống (stored procedure cập nhật Level và trigger chặn Level=1). Nên rà soát kỹ cú pháp (chạy thử câu lệnh trước khi nộp) và tập trung thêm vào Trigger/CTE/UDF ở các module nâng cao.",
+      "raw_score": 68.0,
+      "total_score": 5.67,
+      "max_score": 120,
+      "percentage": 56.67,
+      "answered_count": 10,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "KhoaNTM2",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Đã tạo View PhieuDatHang và Join đúng 3 bảng Don_Hang, Khach_Hang, San_Pham để lấy Ten_KH, Ten_SP (đạt một phần must). Tuy nhiên cột Thanh_Tien tính bằng COUNT(*) * Don_Gia là sai — đề yêu cầu Don_Gia * So_Luong, đồng thời không select cột So_Luong. Việc GROUP BY Ten_KH, Ngay_DH, Ten_SP làm gộp dòng khiến View không còn cùng số dòng với Don_Hang (mất tính 1-1) — vi phạm yêu cầu ở mức nặng. Thiếu alias cho cột tính toán (một số hệ CSDL sẽ báo lỗi cột không tên).",
+          "score": 4
+        },
+        {
+          "row": 3,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 4,
+          "feedback": "Dùng đúng kỹ thuật CTE (WITH TBPB) để tính AVG(EDLEVEL) theo phòng ban — đạt must. Logic so sánh t.tb < e.EDLEVEL đúng mục tiêu (EDLEVEL cá nhân cao hơn trung bình phòng). Join CTE với EMP về đúng DeptNO nên nice-to-have cũng đạt. Bất cập nhỏ: chưa giải thích tại sao CTE tối ưu hơn Subquery lồng nhau (optional); cách viết GROUP BY (d.DeptNO, d.DEPTNAME) hơi lạ dù hợp lệ.",
+          "score": 9
+        },
+        {
+          "row": 5,
+          "feedback": "Tạo đúng bảng DEPARTMENT với DeptNo SERIAL PRIMARY KEY (tự động tăng) — đạt must. NOT NULL cho DeptName, bỏ qua NOT NULL cho Note đúng yêu cầu — đạt nice-to-have. Điểm trừ nhỏ: DeptName VARCHAR(20) hơi chặt so với tên phòng ban thực tế; chưa thêm UNIQUE cho DeptName (optional).",
+          "score": 10
+        },
+        {
+          "row": 6,
+          "feedback": "Định nghĩa Stored Procedure có một phần: 'cơ chế lưu trữ trong database, lưu lại 1 hoặc nhiều thao tác và có thể gọi ra khi cần' — đúng bản chất nhưng còn sơ sài. Hoàn toàn không nêu ưu điểm (tái sử dụng, bảo mật, giảm lưu lượng mạng, tăng hiệu năng) và nhược điểm (tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL) dù đây là nội dung bắt buộc của câu hỏi; không nêu cách gọi SP.",
+          "score": 3
+        },
+        {
+          "row": 7,
+          "feedback": "Có ý tưởng dùng NOT EXISTS để tìm sản phẩm chưa từng được bán — đúng một phần. Nhưng điều kiện giá viết sai chiều: WHERE GiaBan > 20000 trong khi đề yêu cầu giá bán dưới 20.000 (phải là GiaBan < 20000). Câu lệnh 'SELECT FROM SANPHAM' thiếu danh sách cột nên không chạy được về mặt cú pháp. Phần must (lọc GiaBan < 20000) chưa đạt.",
+          "score": 3
+        },
+        {
+          "row": 8,
+          "feedback": "SELECT * FROM NHANVIEN với WHERE Tuoi >= 25 AND Tuoi <= 35 — đạt must và nice-to-have (tương đương BETWEEN 25 AND 35, tính luôn cả hai đầu mút). Câu lệnh gọn, đúng cú pháp. Chưa khai thác optional (giải thích ranh giới BETWEEN).",
+          "score": 10
+        },
+        {
+          "row": 9,
+          "feedback": "Trả lời đúng ý chính: ORDER BY dùng khi cần sắp xếp kết quả theo một tiêu chí. Tuy nhiên chưa nhắc hai chiều sắp xếp ASC/DESC là nội dung cốt lõi của rubric (must), cũng không đề cập sắp xếp theo nhiều cột (nice-to-have). Nên kèm ví dụ minh họa cụ thể.",
+          "score": 5
+        },
+        {
+          "row": 10,
+          "feedback": "Trình bày rõ ràng từng bảng: PK đúng cho STUDENT (SSN), COURSE (Course#), BOOK (Book_ISBN#); chỉ ra ENROLL và BOOK_ADOPTION có composite key (SSN+Course, Course+Book_ISBN) — chạm đúng điểm optional. FK trong ENROLL (SSN, Course) và BOOK_ADOPTION (Course, Book_ISBN) xác định đúng — đạt nice-to-have. Bất cập: thiếu Quarter trong composite key của ENROLL (đầy đủ nhất là SSN+Course+Quarter), phần 'FK là' của STUDENT bị bỏ trống dang dở.",
+          "score": 8
+        },
+        {
+          "row": 11,
+          "feedback": "Select đủ 5 cột yêu cầu từ SANPHAM và LOAISP, JOIN đúng hai bảng, điều kiện WHERE GiaBan IS NOT NULL chính xác mô tả 'đã có niêm yết giá bán' — đạt đủ must và nice-to-have. Dùng alias sp/lsp gọn gàng (optional). Lưu ý nhỏ: USING (MaLoaiSP) chỉ an toàn khi cột trùng tên ở cả hai bảng — ở đây khớp nên chấp nhận được. Tổng thể câu lệnh đúng và sạch.",
+          "score": 10
+        },
+        {
+          "row": 12,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 13,
+          "feedback": "Diễn giải đúng bản chất Transaction: nhiều thao tác gộp thành một đơn vị, hoặc thành công hoặc thất bại (all-or-nothing) — đạt một phần must. Nêu đúng mục đích đảm bảo tính nhất quán dữ liệu. Điểm khuyết: chưa nêu vai trò phục hồi sau lỗi (must), không nhắc các lệnh BEGIN TRANSACTION / COMMIT / ROLLBACK (nice-to-have), chưa có ví dụ minh họa (optional).",
+          "score": 6
+        }
+      ],
+      "overall_comment": "KhoaNTM2 có nền tảng SQL khá: các câu truy vấn đơn giản và kỹ thuật CTE, View, IS NOT NULL đều làm đúng, sạch (câu 4, 5, 8, 11 gần đạt tối đa). Điểm yếu lớn nhất là đọc đề thiếu cẩn thận: câu View (câu 2) sai công thức Thanh_Tien và làm mất tính 1-1 số dòng; câu lọc giá (câu 7) viết ngược điều kiện và sai cú pháp. Hai câu bỏ trống hoàn toàn (câu 3, 12) cùng các câu lý thuyết ngắn (câu 6, 9, 13) cho thấy phần khái niệm nâng cao (Trigger, UDF, Transaction) còn lỏng. Nên đọc kỹ yêu cầu trước khi viết, không để trống câu nào và hệ thống lại phần lý thuyết.",
+      "raw_score": 68.0,
+      "total_score": 5.67,
+      "max_score": 120,
+      "percentage": 56.67,
+      "answered_count": 10,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "NamMP2",
+      "rows": [
+        {
+          "row": 2,
+          "score": 8,
+          "feedback": "Trả lời đúng ý chính: ORDER BY dùng để sắp xếp kết quả trả về theo thứ tự tăng/giảm dần (ASC/DESC). Đạt yêu cầu bắt buộc. Chưa đề cập sắp xếp theo nhiều cột đồng thời và chưa nói về ảnh hưởng của ORDER BY đến hiệu năng."
+        },
+        {
+          "row": 3,
+          "score": 8,
+          "feedback": "CREATE VIEW đúng cú pháp, join đủ 4 bảng (Employee, Emp_Skill, Skill, Department), select đủ 3 cột yêu cầu — đạt phần bắt buộc (chú ý: đặt tên bảng Employees/SKILLS không khớp schema EMPLOYEE/SKILL). Chưa lọc nhân viên đang làm việc (WHERE Status = 0) trong đáp án của mình, cũng chưa giải thích lợi ích/thêm WITH CHECK OPTION."
+        },
+        {
+          "row": 4,
+          "score": 10,
+          "feedback": "Hoàn hảo: SELECT DISTINCT HoTenNV FROM NHANVIEN đúng cả yêu cầu chính (select đúng cột/bảng) lẫn dùng DISTINCT để loại trùng lặp tên. Không cần thêm chi tiết gì."
+        },
+        {
+          "row": 5,
+          "score": 10,
+          "feedback": "Tạo đủ 4 bảng (skills, departments, employees, emp_skill) có khóa chính, khóa ngoại và chèn đủ ít nhất 1 bản ghi mỗi bảng — đạt phần bắt buộc. Áp dụng tốt ràng buộc CHECK (status 0-2, level 1-7, salary >= 0), DEFAULT (empno, status), UNIQUE email, kiểu dữ liệu phù hợp — đạt cả nice-to-have. Nếu thêm ON DELETE/ON UPDATE cho FK và giải thích sẽ được cộng thêm phần tùy chọn."
+        },
+        {
+          "row": 6,
+          "score": 8,
+          "feedback": "Giải thích đúng INNER JOIN (chỉ lấy row khớp điều kiện ON), LEFT JOIN (giữ toàn bộ row bảng trái, phần không khớp ra NULL) và FULL OUTER JOIN (cả hai bên đều giữ, thiếu phần nào ra NULL). Đạt yêu cầu bắt buộc. Chưa nhắc RIGHT JOIN, chưa vẽ sơ đồ Venn minh họa."
+        },
+        {
+          "row": 7,
+          "score": 10,
+          "feedback": "Truy vấn đúng và gọn: lọc QueQuan = 'Gia Lai' kết hợp NOT EXISTS trên BANHANG để tìm nhân viên chưa từng bán hàng — đạt cả phần bắt buộc lẫn nice-to-have (khớp gợi ý NOT EXISTS). Có thể thêm so sánh hiệu năng NOT IN vs NOT EXISTS khi BANHANG chứa NULL để nhận bonus."
+        },
+        {
+          "row": 8,
+          "score": 9,
+          "feedback": "Xác định đúng toàn bộ khóa chính (kể cả khóa phức hợp của BOOK_AUTHOR, BOOK_CATEGORY) và khóa ngoại của 2 bảng trung gian — đạt bắt buộc + đại phần nice-to-have. Còn thiếu khóa ngoại của BOOK_TITLE (PublisherID, BookFormat), cũng chưa chỉ rõ 2 bảng này biểu diễn quan hệ N:N. Gần điểm 10."
+        },
+        {
+          "row": 9,
+          "score": 4,
+          "feedback": "Nhận ra phân tách 2 tập hợp (nhánh NOT EXISTS cho người chưa bán gì đúng), nhưng nhánh còn lại sai logic: EXISTS(tensp='OMO') không loại trừ người còn bán thêm sản phẩm khác — thiếu điều kiện nhân viên chỉ bán duy nhất OMO. Chưa dùng GROUP BY/HAVING/UNION như gợi ý rubric, truy vấn trả về SELECT * không rõ ràng."
+        },
+        {
+          "row": 10,
+          "score": 3,
+          "feedback": "Chỉ có 2 câu ALTER (thêm manager_id vào Projects, employeeid vào projectmodules), chưa tạo đầy đủ 4 bảng với khóa chính/khóa ngoại, không chèn bất kỳ bản ghi test nào. Hướng tiếp cận 'thêm manager_id vào Projects' đúng ý nhưng cú pháp ALTER chưa chuẩn và thiếu thiết lập self-join cho SupervisorID."
+        },
+        {
+          "row": 11,
+          "score": 9,
+          "feedback": "Self-Join đúng cấu trúc (join chính EMPLOYEE với EMPLOYEE trên MgrNo), dùng LEFT JOIN hợp chuẩn để giữ nhân viên không có manager, có đặt alias, select đủ các cột yêu cầu — đạt cả phần bắt buộc lẫn nice-to-have; tuy nhiên đặt tên bảng nhanvien và cột quanly.manv không có trong schema đề (đúng phải là EmpNo)."
+        },
+        {
+          "row": 12,
+          "score": 8,
+          "feedback": "Phân biệt đúng Stored Procedure được gọi tường minh (CALL) và Trigger được kích hoạt tự động sau INSERT/DELETE/UPDATE trên bảng — đạt phần bắt buộc. Giải thích CREATE TRIGGER ... EXECUTE FUNCTION phù hợp Postgres. Chưa nói Stored Procedure có thể nhận tham số còn Trigger thì không; phần mục đích sử dụng còn sơ sài."
+        },
+        {
+          "row": 13,
+          "score": 2,
+          "feedback": "Sai nghiêm trọng về cú pháp: 'ALTER Employees ADD mgrno DEFAULT 0' = câu lệnh thêm Column mới, trong khi đề yêu cầu sửa bảng EMPLOYEE để đặt giá trị mặc định. Đúng ra phải là ALTER TABLE EMPLOYEE ALTER COLUMN mgrno SET DEFAULT 0 (hoặc MODIFY COLUMN); chưa có ALTER COLUMN/SET DEFAULT, cũng chưa áp dụng DEFAULT 0 đúng khung cho cả 2 cột."
+        }
+      ],
+      "overall_comment": "NamMP2 nắm tốt nội dung truy vấn cơ bản — các câu SELECT/DISTINCT/JOIN lẫn tạo bảng có ràng buộc đều được điểm rất cao, phân tích JOIN và cách dùng NOT EXISTS đều chuẩn. Điểm kém nhất tập trung ở các câu DDL/khởi tạo nâng cao: câu sửa ràng buộc DEFAULT sai hoàn toàn cú pháp, câu tạo 4 bảng dự án quản lý dự án gần như chỉ có ý tưởng chưa thành lời, câu liệt kê 'chưa bán gì hoặc chỉ bán OMO' thiếu logic loại trừ. Nên luyện thêm set-based query (GROUP BY + HAVING + UNION) với cú pháp ALTER TABLE để cân bằng phần lý thuyết với phần thực chiến.",
+      "raw_score": 89.0,
+      "total_score": 7.42,
+      "max_score": 120,
+      "percentage": 74.17,
+      "answered_count": 12,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "NgocNLT2",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Trả lời đúng bản chất khóa phức hợp là khóa chính gồm 2 cột kết hợp lại, kèm cách hiểu khi tra cứu dữ liệu phải dựa vào cả 2 cột. Tuy nhiên chưa nêu rõ điều kiện áp dụng (khi một cột không đủ đảm bảo tính duy nhất) và không có ví dụ bảng trung gian trong quan hệ nhiều-nhiều.",
+          "score": 7
+        },
+        {
+          "row": 3,
+          "feedback": "Logic truy vấn bên trong đúng (SELECT các cột yêu cầu, WHERE ProductNumber LIKE '%CA%' AND Color = 'Black') nên đạt phần nice_to_have. Nhưng toàn bộ khối code không phải User Defined Function của SQL Server: viết kiểu 'function getProducts(){...}' như JavaScript, thiếu CREATE FUNCTION ... RETURNS TABLE và không chạy được trong AdventureWorks.",
+          "score": 5
+        },
+        {
+          "row": 4,
+          "feedback": "Câu UPDATE đúng cú pháp UPDATE SANPHAM SET, đúng công thức GiaBan = GiaBan * 2 và có điều kiện WHERE MaLoaiSP = 'Type001' — đạt đủ must-have và nice-to-have. Chưa xử lý GiaBan NULL (thêm ISNULL(GiaBan,0) * 2 sẽ được điểm optional). Lưu ý nhỏ: MaLoaiSP trong schema là INT nhưng điều kiện so sánh với 'Type001' theo đúng như đề bài yêu cầu, chấp nhận được.",
+          "score": 9
+        },
+        {
+          "row": 5,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 6,
+          "feedback": "Đúng ý Stored Procedure là tập lệnh SQL lưu sẵn trong database, gọi lại bằng CALL (MySQL) hoặc EXEC (SQL Server). Phần Trigger còn nhầm lẫn: nói trigger phải 'định nghĩa và execute' mới lưu vào database — thực tế trigger được tạo bằng CREATE TRIGGER và tự động kích hoạt khi có sự kiện DML; liệt kê sự kiện 'select, truncate' là sai (trigger DML chỉ gắn với INSERT/UPDATE/DELETE). Thiếu phần so sánhчетко giữa cách gọi tường minh và tự động kích hoạt.",
+          "score": 5
+        },
+        {
+          "row": 7,
+          "feedback": "Truy vấn có nhiều lỗi cú pháp và logic: 'not exists' đặt sai vị trí (không thể viết n.MaNV not exists (...)), dấu ';' giữa where và ')' làm union fail; nhánh 2 chỉ lọc nhân viên bán OMO nhưng không kiểm tra nhân viên đó KHÔNG bán sản phẩm nào khác (thiếu kiểm tra COUNT(DISTINCT MaSP) = 1). Câu 'where b.SoLuongDaBan > 0 or b.SoLuongDaBan is not null' về logic luôn luôn true khiến điều kiện vô nghĩa. Nhận diện được 2 tập hợp cần tìm nhưng triển khai sai, không chạy được.",
+          "score": 3
+        },
+        {
+          "row": 8,
+          "feedback": "Xác định đúng và đầy đủ: PK của cả 7 bảng (BOOK_TITLE: ISBN_Number; BOOK_AUTHOR: ISBN_Number + AuthorID; AUTHOR: AuthorID; PUBLISHER: PublisherID; BOOK_CATEGORY: ISBN_Number + CategoryID; CATEGORY: CategoryID; BOOK_FORMAT: BookFormat), đồng thời liệt kê đúng các FK (PublisherID, BookFormat trong BOOK_TITLE; ISBN_Number, AuthorID trong BOOK_AUTHOR; ISBN_Number, CategoryID trong BOOK_CATEGORY) và ngầm nhận diện được các bảng N:N bằng PK kép. Trả lời xuất sắc.",
+          "score": 10
+        },
+        {
+          "row": 9,
+          "feedback": "Đúng bảng NHANVIEN, đúng ORDER BY Tuoi DESC và giới hạn 5 dòng. Tuy nhiên dùng LIMIT 5 (MySQL/PostgreSQL) trong ngữ cảnh đề bài thường là SQL Server (đề chuẩф пред=require SELECT TOP 5), nên chưa khớp cú pháp chuẩn theo hệ CSDL được chỉ định. Ý tưởng đúng, cú pháp lệch hệ quản trị.",
+          "score": 8
+        },
+        {
+          "row": 10,
+          "feedback": "CTE khởi tạo đúng dạng 'with ... as (select avg(EDLEVEL) ... group by DEPTNO)' nhưng có 2 lỗi: (1) trong CTE chỉ select avg(EDLEVEL) mà thiếu cột DEPTNO, dẫn đến không thể join để so sánh từng nhân viên với trung bình phòng của họ; (2) hoàn toàn thiếu phần tiếp theo — join EMP với CTE với điều kiện EMP.EDLEVEL > cột trung bình, trong khi đây mới là kết quả cuối bài yêu cầu. Chấp nhận được ở mức nhận ra cần CTE, nhưng truy vấn chưa hoàn thành.",
+          "score": 5
+        },
+        {
+          "row": 11,
+          "feedback": "Đúng các cột (EmpName, Email, mã kỹ năng), JOIN đúng EMPLOYEE với EMP_SKILL và ORDER BY EmpName ASC. Nhưng dùng group_concat(es.SkillNo, '') của MySQL để gộp mã kỹ năng thành một chuỗi, trong khi đề bài chỉ yêu cầu liệt kê mã kỹ năng — kết quả mỗi nhân viên chỉ còn một dòng với chuỗi mã thay vì từng dòng kỹ năng; group by es.EmpNo cũng nên là e.EmpNo để tránh sai nhóm. Không đạt đủ nice_to_have 'kết quả không bị thiếu dữ liệu'.",
+          "score": 6
+        },
+        {
+          "row": 12,
+          "feedback": "Trả lời đúng bản chất: View là 'bảng ảo/tạm' tạo từ CREATE VIEW để tái sử dụng câu truy vấn thay vì viết lại nhiều lần. Thiếu khía cạnh nice_to_have: tính bảo mật (che giấu cột nhạy cảm) và đơn giản hóa truy vấn phức tạp; cũng không nhấn mạnh rằng View thường không lưu dữ liệu (chỉ Materialized View mới lưu).",
+          "score": 7
+        },
+        {
+          "row": 13,
+          "feedback": "Câu SELECT * FROM Actor a WHERE a.Age > 50 hoàn toàn chính xác, đúng cú pháp, đúng bảng, đúng điều kiện, kèm alias hợp lệ. Chỉ thiếu bonus ORDER BY Age DESC.",
+          "score": 9
+        }
+      ],
+      "overall_comment": "Bài làm cho thấy nền tảng SQL khá tốt ở câu hỏi khái niệm cơ bản (khóa phức hợp, View, PK/FK) và các câu SQL đơn giản (UPDATE, SELECT có WHERE, ORDER BY + LIMIT) — đặc biệt xuất sắc ở câu xác định PK/FK của lược đồ Quản lý Sách. Điểm yếu nổi bật: chưa nắm vững cú pháp chính thức của hệ CSDL được đề yêu cầu — dùng cú pháp JavaScript/MySQL/PostgreSQL cho UDF của SQL Server, dùng LIMIT thay TOP, group_concat thay vì liệt kê dòng — khiến một số câu đúng ý nhưng không chạy đúng môi trường. Các câu Hard (trigger audit, truy vấn 2 tập hợp OMO, CTE trung bình theo phòng) mới dừng ở ý tưởng, chưa viết được truy vấn hoàn chỉnh và đúng logic. Nếu luyện thêm cú pháp UDF/Trigger SQL Server và kỹ thuật HAVING/COUNT với tập hợp, điểm sẽ cao hơn đáng kể.",
+      "raw_score": 74.0,
+      "total_score": 6.17,
+      "max_score": 120,
+      "percentage": 61.67,
+      "answered_count": 11,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "NhuanLD3",
+      "rows": [
+        {
+          "row": 2,
+          "score": 9,
+          "feedback": "Truy vấn đúng hoàn toàn: SELECT * FROM Actor với WHERE Age > 50. Đủ must-have (cú pháp đúng) và nice-to-have (điều kiện tuổi). Thiếu phần optional (ORDER BY Age DESC) nên không đạt điểm tối đa."
+        },
+        {
+          "row": 3,
+          "score": 7,
+          "feedback": "Trả lời đúng bản chất: SELECT * dùng để liệt kê tất cả các cột của bảng. Tuy nhiên câu trả lời quá ngắn, không có ví dụ minh họa (ví dụ SELECT * FROM NhanVien) nên không được điểm nice-to-have."
+        },
+        {
+          "row": 4,
+          "score": 4,
+          "feedback": "Ý tưởng đúng khi dùng GROUP BY email với COUNT(email), nhưng thiếu mệnh đề HAVING COUNT(*) > 1 — điều kiện bắt buộc để chỉ lọc ra các bản ghi bị trùng. Kết quả hiện tại liệt kê toàn bộ email kèm số lượng, không đáp ứng yêu cầu Output chỉ hiện email a@gmail.com xuất hiện 2 lần."
+        },
+        {
+          "row": 5,
+          "score": 5,
+          "feedback": "Xác định đúng PK của Customer (CustId), Item (ItemNo), InvoiceItem (LineNo, ItemNo). Tuy nhiên sai sót đáng kể: nói Invoice không có khóa ngoại trong khi CustId rõ ràng là FK tham chiếu Customer; InvoiceItem thiếu FK ItemNo tham chiếu Item. Nhận định InvoiceItem PK là (LineNo, ItemNo) hợp lý theo cách hiểu bảng trung gian nhưng chưa nêu rõ InvoiceNo liên kết."
+        },
+        {
+          "row": 6,
+          "score": 1,
+          "feedback": "Câu trả lời dở dang: 'select  from DEPT d inner join Emp e ...' thiếu toàn bộ cột cần SELECT, không có SUM(SALARY + BONUS), không có GROUP BY/HAVING hay subquery để tìm phòng có quỹ lương cao nhất, không có phần Top 5 nhân viên. Truy vấn hiện tại không chạy được và không giải quyết được yêu cầu nào cả."
+        },
+        {
+          "row": 7,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        },
+        {
+          "row": 8,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        },
+        {
+          "row": 9,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        },
+        {
+          "row": 10,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        },
+        {
+          "row": 11,
+          "score": 2,
+          "feedback": "Có ý tưởng dùng hàm/trigger để chặn dữ liệu không hợp lệ, nhưng cú pháp sai hoàn toàn: 'create function prevent invalid_infor' sai cú pháp PostgreSQL, thiếu FOR EACH ROW và hệ sự kiện (INSERT/UPDATE), điều kiện so sánh bị cắt cụt giữa chừng (new.ProjectModule...), thiếu logic kiểm tra ProjectCompletedOn, không có Raise/Exception để ngăn vi phạm. Chỉ đạt điểm tối thiểu vì có nỗ lực định hướng."
+        },
+        {
+          "row": 12,
+          "score": 5,
+          "feedback": "Định nghĩa Stored Procedure cơ bản đúng (tập thao tác SQL lưu trong DB, gọi lại khi cần). Ưu điểm 'che giấu sự phức tạp logic' được chấp nhận. Nhưng phần nhược điểm sai lệch: 'đa số không trả về dữ liệu' không chính xác (SP hoàn toàn có thể trả về kết quả), thiếu các nhược điểm chuẩn như khó gỡ lỗi, phụ thuộc hệ CSDL; cũng không nhắc cách gọi hay ưu điểm tái sử dụng/bảo mật/giảm lưu lượng mạng."
+        },
+        {
+          "row": 13,
+          "score": 0,
+          "feedback": "Không có câu trả lời."
+        }
+      ],
+      "overall_comment": "Học sinh trả lời tốt các câu dễ (truy vấn cơ bản, khái niệm SELECT *) nhưng bỏ trống 6/12 câu (chủ yếu ở các câu coding khó: trigger, UDF, view, subquery). Các câu còn lại có nỗ lực nhưng nhiều sai sót: thiếu HAVING khi tìm trùng lặp, sai khóa ngoại của Invoice/InvoiceItem, truy vấn quỹ lương dở dang không chạy được, ý tưởng trigger sai cú pháp. Tổng điểm 33/120 — cần củng cố phần thực hành SQL nâng cao.",
+      "raw_score": 33.0,
+      "total_score": 2.75,
+      "max_score": 120,
+      "percentage": 27.5,
+      "answered_count": 7,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "PhucNQ16",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Truy vấn JOIN lọc theo Skill_Code = 'Java' đúng, kèm giải pháp Subquery dùng IN hoàn chỉnh — đạt đủ must-have và nice-to-have. Chưa đạt điểm cộng vì chưa phân tích ưu/nhược điểm của hai cách (ví dụ EXISTS vs IN, tránh duplicate rows).",
+          "score": 10
+        },
+        {
+          "row": 3,
+          "feedback": "Trả lời đúng bản chất: NULL là giá trị chưa được gán cho biến nào. Chưa nói rõ NULL khác số 0 và chuỗi rỗng '' (nice-to-have), cũng chưa nêu cách kiểm tra bằng IS NULL / IS NOT NULL.",
+          "score": 8
+        },
+        {
+          "row": 4,
+          "feedback": "Nêu được ý tưởng trigger tự kích hoạt theo sự kiện trong Database nên được một phần điểm, nhưng chưa nêu trigger là loại Stored Procedure chạy tự động trên sự kiện INSERT/UPDATE/DELETE của bảng; cách dùng còn mơ hồ ('dùng để verify khi insert', 'dùng CRUD' không rõ ràng). Thiếu các loại BEFORE/AFTER/INSTEAD OF và rủi ro khi dùng trigger.",
+          "score": 4
+        },
+        {
+          "row": 5,
+          "feedback": "Đúng các điểm khác biệt chính: UNIQUE cho phép một giá trị NULL (trong khi PK không), PK định danh duy nhất một row, kèm ví dụ thực tế (CCCD, SDT) nên đạt cả nice-to-have. Chưa đạt điểm cộng vì chưa nhắc index được tự động tạo cho cả hai.",
+          "score": 10
+        },
+        {
+          "row": 6,
+          "feedback": "Xác định đúng PK cho từng bảng (Student: SSN#, Course: Course#, Book: Book_ISBN#) và đúng khóa ngoại của ENROLL (SSN#, Course#) và BOOK_ADOPTION (Course#, Book_ISBN#); nêu rõ khóa chính của ENROLL và BOOK_ADOPTION là khóa ghép (composite key) nên đạt luôn optional. Bài làm đầy đủ và chính xác.",
+          "score": 10
+        },
+        {
+          "row": 7,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 8,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 9,
+          "feedback": "Có cấu trúc CREATE TABLE với DeptNo là khóa chính nên được một phần điểm must-have, nhưng cú pháp sai nhiều chỗ nên script không chạy được: 'auto increment' là cú pháp MySQL (SQL Server phải dùng IDENTITY(1,1)); 'not null required' không hợp lệ ('required' không phải từ khóa SQL); Note là ghi chú tự do không nên đặt NOT NULL (đề yêu cầu chỉ DeptName NOT NULL).",
+          "score": 4
+        },
+        {
+          "row": 10,
+          "feedback": "Cú pháp UPDATE SANPHAM SET đúng, công thức GiaBan * 2 và điều kiện WHERE theo MaLoaiSP đều có nên đạt must + nice. Trừ điểm vì: MaLoaiSP là INT nhưng điều kiện so sánh với 'Type001' (chuỗi) — không khớp kiểu , và 'set s.Giaban = s.Giaban * 2' đúng ý nhưng viết 'Giaban' thiếu nhất quán (SQL không phân biệt hoa thường nên chấp nhận được chung). Chưa xử lý GiaBan NULL (optional).",
+          "score": 9
+        },
+        {
+          "row": 11,
+          "feedback": "Dùng đúng SELECT FROM SANPHAM với WHERE LEN(TenSP) = 12, đạt đủ must-have và nice-to-have. Chưa đạt điểm cộng vì chưa giải thích khác biệt giữa LEN() và DATALENGTH().",
+          "score": 10
+        },
+        {
+          "row": 12,
+          "feedback": "JOIN đúng 4 bảng NHANVIEN, BANHANG, SANPHAM, LOAISP qua các khóa ngoại, select đủ các cột yêu cầu, alias rõ ràng — đạt đủ must-have và nice-to-have. Chưa sắp xếp kết quả theo MaNV/HoTenNV (optional). Lỗi nhỏ: 'nv.ManV' viết thường có thể gây nhầm nhưng SQL Server không phân biệt hoa thường nên chấp nhận được.",
+          "score": 9
+        },
+        {
+          "row": 13,
+          "feedback": "Tạo đúng CREATE VIEW với JOIN 4 bảng EMPLOYEE, DEPARTMENT, EMP_SKILL, SKILL (vượt yêu cầu 3 bảng), cú pháp hợp lệ nên đạt must-have. Chưa đạt nice-to-have vì thiếu điều kiện WHERE Status = 0 để lọc nhân viên đang làm việc; chưa có phần giải thích lợi ích của View (optional). Lưu ý nhỏ: nên bỏ ngoặc đơn sau CREATE VIEW AS vì một số hệ CSDL không chấp nhận.",
+          "score": 8
+        }
+      ],
+      "overall_comment": "Thí sinh PhucNQ16 có nền tảng SQL tốt ở các câu truy vấn: JOIN 4 bảng, UPDATE, LEN, nhận diện khóa chính/khóa ngoại và so sánh UNIQUE vs PRIMARY KEY đều đạt mức cao (8–10). Điểm trừ đáng kể: hai câu hoàn toàn bỏ trống (câu 7 - Inline Table UDF và câu 8 - Trigger ProductInventoryAudit) mất 16 điểm tiềm năng; câu tạo bảng dùng cú pháp 'auto increment'/'required' không chạy được trong SQL Server; câu lý thuyết về trigger chỉ trả lời sơ sài. Cần rà lại bài trước khi nộp, hệ thống hóa kiến thức về UDF, Trigger, IDENTITY và tránh nhầm cú pháp giữa MySQL và SQL Server.",
+      "raw_score": 82.0,
+      "total_score": 6.83,
+      "max_score": 120,
+      "percentage": 68.33,
+      "answered_count": 10,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "TrungCT7",
+      "rows": [
+        {
+          "row": 2,
+          "feedback": "Câu trả lời chỉ nêu đúng mối quan hệ tham chiếu (DeptNo → DEPARTMENT(DeptNo)) nhưng thiếu hoàn toàn phần cú pháp bắt buộc: chưa dùng ALTER TABLE EMPLOYEE ADD CONSTRAINT ... FOREIGN KEY. Thiếu mệnh đề ALTER TABLE nên đoạn text này không thể chạy được trong SQL Server. Cũng chưa đề cập ON DELETE/ON UPDATE.",
+          "score": 2
+        },
+        {
+          "row": 3,
+          "feedback": "Trả lời chưa xác định được SQL là viết tắt của Structured Query Language (ngôn ngữ truy vấn có cấu trúc) — mô tả SQL như 'hệ quản trị cơ sở dữ liệu' là chưa chính xác. Chỉ nhận được phần nào về việc quản lý/làm việc với dữ liệu, chưa nêu lệnh truy vấn/cập nhật và các nhóm lệnh DQL/DML/DDL/DCL.",
+          "score": 2
+        },
+        {
+          "row": 4,
+          "feedback": "Có ý tưởng dùng LEFT JOIN BANHANG nhưng logic sai căn bản: WHERE b.SoluongBan IS NULL AND s.TenSP = 'Bột giặt OMO' là điều kiện mâu thuẫn trên cùng 1 dòng (nếu SoLuongDaBan IS NULL thì không thể đồng thời có tên sản phẩm = 'Bột giặt OMO'), nên truy vấn không trả về kết quả hợp lệ. Chưa phân biệt được 2 tập hợp (không bán gì / chỉ bán OMO) — cần GROUP BY MaNV với HAVING COUNT = 0 và HAVING COUNT(DISTINCT MaSP) = 1 rồi UNION; để bắt 'chỉ bán OMO' phải dùng MIN(TenSP) thay vì so trực tiếp. Tên cột cũng sai (SoluongBan thay vì SoLuongDaBan).",
+          "score": 1
+        },
+        {
+          "row": 5,
+          "feedback": "Câu trả lời rối, không nêu được điểm khác biệt cốt lõi: Stored Procedure được gọi tường minh bởi người dùng/ứng dụng, còn Trigger tự động thực thi khi có sự kiện DML. Nội dung 'tính toán bên trong' không phản ánh bản chất của 2 đối tượng. Chưa nhắc Stored Procedure nhận tham số còn Trigger thì không, và chưa nói về mục đích sử dụng khác nhau.",
+          "score": 1
+        },
+        {
+          "row": 6,
+          "feedback": "Chỉ viết 1 câu SELECT thường, không đúng yêu cầu: thiếu CREATE PROCEDURE (hoặc CREATE OR ALTER PROCEDURE) với tham số @EmpNo đầu vào, và thiếu điều kiện EmpNo = tham số trong WHERE. Có join Department, chọn đủ cột EmpName/Email/DeptName và lọc Status = 2 là điểm cộng. Cần bọc logic trong SP và thêm điều kiện theo EmpNo.",
+          "score": 2
+        },
+        {
+          "row": 7,
+          "feedback": "Có hướng join EMPLOYEE - DEPARTMENT, GROUP BY DeptNo và HAVING COUNT >= 2 — đúng ý đếm nhân viên theo phòng ban. Tuy nhiên: (1) dùng cột e.employid không tồn tại (phải là EmpNo); (2) chưa in được danh sách nhân viên của phòng ban như đề yêu cầu. Điểm must chỉ đạt một phần. Có thể cải thiện bằng CTE/WINDOW FUNCTION (STRING_AGG) để nhóm danh sách nhân viên ngay cạnh tên phòng.",
+          "score": 3
+        },
+        {
+          "row": 8,
+          "feedback": "Truy vấn chính xác: SELECT * FROM NHANVIEN, kết hợp đúng 2 điều kiện Tuoi >= 23 AND QueQuan = 'Bình Định'. Đáp ứng đủ yêu cầu must-have và nice-to-have. Gợi ý nhỏ: thêm N'' cho chuỗi Unicode (N'Bình Định') và LTRIM/RTRIM nếu dữ liệu có khoảng trắng thừa (bonus).",
+          "score": 10
+        },
+        {
+          "row": 9,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 10,
+          "feedback": "Không có câu trả lời.",
+          "score": 0
+        },
+        {
+          "row": 11,
+          "feedback": "Có tạo 2 bảng SKILL và EMP_SKILL nhưng nhiều lỗi: (1) khai báo SkillNo và EmpNo đều 'primary key' riêng lẻ trong EMP_SKILL — sai cú pháp, PK kép phải viết 'PRIMARY KEY (SkillNo, EmpNo)'; (2) 'Description NVARCHAR(100) is null' không phải cú pháp SQL (không cần khai báo nullable); (3) 'FOREIGN key SkillNo References...' thiếu từ khóa CONSTRAINT/KEY và cú pháp đúng; (4) auto_increment không phải SQL Server (cần IDENTITY); (5) thiếu hoàn toàn phần chèn dữ liệu test (INSERT 1 bản ghi/bảng) như đề bắt buộc, và chưa có CHECK cho SkillLevel.",
+          "score": 3
+        },
+        {
+          "row": 12,
+          "feedback": "Truy vấn tốt: chọn đúng cột từ LOAISP, JOIN chuỗi LOAISP - SANPHAM - BANHANG, lọc SoLuongDaBan > 0 đảm bảo loại sản phẩm đã từng được bán. Điểm trừ duy nhất: thiếu DISTINCT nên nếu 1 loại có nhiều sản phẩm được bán sẽ bị lặp dòng. Có thể tối ưu hơn nữa bằng EXISTS/IN.",
+          "score": 9
+        },
+        {
+          "row": 13,
+          "feedback": "Xác định đúng 5/5 khóa chính (ISBN_Number, AuthorID, PublisherID, CategoryID, BookFormat) và đúng các khóa ngoại chính (ISBN_Number + AuthorID của BOOK_AUTHOR, ISBN_Number + CategoryID của BOOK_CATEGORY). Chưa chú ý 2 khóa ngoại nằm ngay trong bảng BOOK_TITLE: PublisherID (tham chiếu PUBLISHER) và BookFormat (tham chiếu BOOK_FORMAT). Chưa chỉ ra rõ BOOK_AUTHOR/BOOK_CATEGORY là các bảng quan hệ N:N có khóa chính là kết hợp 2 khóa ngoại. Có vài lỗi chính tả nhỏ (Catagory) nhưng không ảnh hưởng nhiều.",
+          "score": 8
+        }
+      ],
+      "overall_comment": "TrungCT7 có kiến thức SQL cơ bản tương đối (câu lọc nhiều điều kiện đơn giản làm rất tốt, hiểu JOIN cơ bản) nhưng còn nhiều lỗ hổng: chưa thuộc cú pháp ALTER TABLE/ADD CONSTRAINT, chưa nắm bản chất Stored Procedure vs Trigger, logic truy vấn phức tạp (xử lý 2 tập hợp nhân viên bán hàng, thống kê theo phòng ban) còn yếu và cú pháp DDL có nhiều lỗi nghiêm trọng. Câu về Stored Procedure độc lập và UNION/UNION ALL không làm. Nên ôn lại: DDL ràng buộc (PK kép, FK, CHECK, IDENTITY), cơ chế gọi SP/Trigger, kỹ thuật GROUP BY - HAVING - UNION, và vay mượn pattern CTE/WINDOW FUNCTION cho truy vấn nâng cao.",
+      "raw_score": 41.0,
+      "total_score": 3.42,
+      "max_score": 120,
+      "percentage": 34.17,
+      "answered_count": 10,
+      "question_count": 12
+    },
+    {
+      "sheet_name": "TuyenLQ4",
+      "rows": [
+        {
+          "row": 2,
+          "score": 9,
+          "feedback": "Xác định đúng khóa chính cho cả 4 bảng (CustId, InvoiceNo, LineNo, ItemNo) — đạt must-have. Khóa ngoại CustId (Invoice) và ItemNo (InvoiceItem) nhận diện đúng, song thiếu FK InvoiceNo trong InvoiceItem. Chưa nhận ra PK của InvoiceItem nên là kết hợp (LineNo, InvoiceNo) với InvoiceNo vừa là PK vừa là FK."
+        },
+        {
+          "row": 3,
+          "score": 8,
+          "feedback": "Logic UPDATE đúng điều kiện Level = 1 và yêu cầu >= 3 năm — đạt must-have. Nhưng không viết dưới dạng Stored Procedure (CREATE PROCEDURE như đề yêu cầu), hàm difftimestamp không tồn tại trong SQL Server (đúng phải là DATEDIFF(year, StartDate, GETDATE())), và không in ra số lượng bản ghi đã cập nhật bằng @@ROWCOUNT."
+        },
+        {
+          "row": 4,
+          "score": 4,
+          "feedback": "Câu truy vấn chạy được nhưng sai logic: điều kiện lọc đặt trên d.deptname (tên phòng ban) thay vì cột e.major của bảng EMP như đề bài, nên kết quả hoàn toàn không tương ứng yêu cầu. JOIN sang DEPT không phục vụ mục đích, SELECT * chưa tối ưu. Toán tử OR để bắt nhân viên học 1 trong 2 ngành là đúng hướng, nhưng cột so sánh sai khiến bài sai bản chất. Chưa phân tích edge case AND/OR."
+        },
+        {
+          "row": 5,
+          "score": 5,
+          "feedback": "Hướng LEFT JOIN với SANPHAM là đúng và điều kiện GiaBan < 20000 đạt must-have. Nhưng 'manv = null' sai cú pháp SQL — NULL không thể so sánh bằng '=' (phải là IS NULL), nên nhánh sản phẩm chưa từng được bán sẽ không trả về kết quả nào. Chưa nhận ra lưu ý xử lý logic OR khi trộn điều kiện giá với điều kiện chưa bán trong cùng WHERE."
+        },
+        {
+          "row": 6,
+          "score": 2,
+          "feedback": "Nhận ra cần DELETE từ bảng Projects nhưng cú pháp hoàn toàn sai: 'delete table' không đúng cú pháp SQL, cách tính month(projectCompletedOn - projectStartDate) không hợp lệ và còn ngược logic (điều kiện xóa phải là dự án hoàn thành >= 3 tháng trước, không phải < 3). Không xóa dữ liệu bảng con WorkDone và ProjectModules trước, không dùng DATEDIFF, không in @@ROWCOUNT, không TRANSACTION."
+        },
+        {
+          "row": 7,
+          "score": 4,
+          "feedback": "Liệt kê đủ các cột yêu cầu và lồng mệnh đề GROUP BY theo hướng tổng hợp — đạt mức cơ bản. Nhưng hàm 'average' không tồn tại (đúng là AVG) và GROUP BY theo e.empno làm mỗi nhóm chỉ chứa 1 dòng nhân viên → DEPT_AVG_SAL thực chất là lương của chính nhân viên đó, không phải trung bình theo phòng ban (phải GROUP BY theo deptno, hoặc dùng scalar subquery/CTE). Đề yêu cầu >= 2 giải pháp (Scalar Fullselect, Join, CTE) nhưng chỉ đưa ra 1 giải pháp."
+        },
+        {
+          "row": 8,
+          "score": 1,
+          "feedback": "Định nghĩa Stored Procedure không đúng bản chất — 'không tham số' chỉ là đặc điểm của một dạng SP cụ thể, không phải khái niệm chung. Thiếu hoàn toàn phần ưu điểm (tái sử dụng, bảo mật, giảm lưu lượng mạng, tăng hiệu năng) và nhược điểm (tốn bộ nhớ server, khó gỡ lỗi, phụ thuộc hệ CSDL)."
+        },
+        {
+          "row": 9,
+          "score": 6,
+          "feedback": "Cú pháp CREATE TABLE đúng, PK là SkillNo, và NOT NULL cho SkillName + để Note được NULL là chính xác — đạt nice-to-have. Nhưng thiếu ràng buộc tự động tăng (IDENTITY hoặc AUTO_INCREMENT) cho SkillNo như đề yêu cầu, điểm mất nặng ở must-have."
+        },
+        {
+          "row": 10,
+          "score": 3,
+          "feedback": "Nhận ra index giúp truy cập nhanh — đúng một phần ý chính. Nhưng cách diễn đạt 'đánh dấu làm số thứ tự' và 'sử dụng để làm khóa chính' sai về khái niệm: index là cấu trúc dữ liệu (B-Tree) tăng tốc truy vấn, không phải để làm khóa chính. Thiếu phần khi nào nên dùng (cột thường xuất hiện trong WHERE/JOIN) và khi nào không nên (bảng nhỏ, cột hay cập nhật)."
+        },
+        {
+          "row": 11,
+          "score": 7,
+          "feedback": "Kết hợp SANPHAM với BANHANG về bản chất vẫn ra các sản phẩm đã bán — đạt must-have. Nhưng SELECT masp khi cả 2 bảng đều có cột này sẽ gây lỗi cột không rõ ràng (ambiguous column), nhiều khả năng không chạy được nếu chỉ định s.masp hoặc b.masp rõ ràng. Thiếu DISTINCT nên không loại bỏ được mã sản phẩm bán nhiều lần — mất điểm nice-to-have."
+        },
+        {
+          "row": 12,
+          "score": 9,
+          "feedback": "Định nghĩa SQL đúng: viết tắt của ngôn ngữ truy vấn có cấu trúc (structured query language), dùng để truy vấn dữ liệu — đạt must-have đầy đủ. Chỉ thiếu việc nhắc thêm vai trò cập nhật/quản lý dữ liệu ngoài truy vấn (UPDATE, DELETE, DDL, DCL) để đạt nice-to-have."
+        },
+        {
+          "row": 13,
+          "score": 10,
+          "feedback": "Câu trả lời chuẩn: SELECT đúng cột HoTenNV từ bảng NHANVIEN (must-have) và dùng DISTINCT để loại bỏ tên trùng lặp (nice-to-have) — trọn điểm. Cột hotennv đã chứa cả họ + tên nên đáp ứng đủ yêu cầu đề bài."
+        }
+      ],
+      "overall_comment": "HV tiếp cận các câu SQL cơ bản (SELECT, DISTINCT, CREATE TABLE, JOIN đơn giản) khá ổn — câu 13 đạt trọn điểm, câu 2 và 12 gần tối đa. Tuy nhiên các câu phức tạp bộc lộ nhiều lỗ hổng: so sánh NULL sai cú pháp (= null thay vì IS NULL), lọc sai cột nghiệp vụ (deptname thay vì major), AVG sai logic do GROUP BY theo từng nhân viên, DELETE sai cả cú pháp lẫn điều kiện thời gian, và định nghĩa các khái niệm nền tảng (Stored Procedure, Index) rất mờ nhạt. Cần hệ thống lại lý thuyết cơ bản, tuân thủ cú pháp SQL tiêu chuẩn (IS NULL, AVG, DATEDIFF, GROUP BY) và rèn kỹ năng đưa ra nhiều phương án xử lý cho cùng một yêu cầu.",
+      "raw_score": 68.0,
+      "total_score": 5.67,
+      "max_score": 120,
+      "percentage": 56.67,
+      "answered_count": 12,
+      "question_count": 12
+    }
+  ],
+  "class_summary": {
+    "raw_score": 974.0,
+    "total_score": 5.07,
+    "max_score": 1920,
+    "percentage": 50.73,
+    "answered_count": 172,
+    "question_count": 192
+  }
+}
